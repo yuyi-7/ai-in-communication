@@ -143,16 +143,20 @@ with tf.Session() as sess:
         # 设置批次
         start = (i * BATCH_SIZE) % TRAIN_NUM
         end = min(start+BATCH_SIZE, TRAIN_NUM)
-        loss_entropy = sess.run(cross_entropy_mean,
-                                feed_dict={x: X[start:end], y_: Y[start:end]})
-
+        
         tf.summary.scalar('cross_entropy_mean_loss', cross_entropy_mean)  # tensorboard写入交叉熵误差
         tf.summary.scalar('loss', loss)  # tensorboard写入总误差
 
         merged = tf.summary.merge_all()
 
-        compute_loss,summary = sess.run([train_step, merged],
+        _,summary = sess.run([train_step, merged],
                                         feed_dict={x:X[start:end], y_:Y[start:end]})
+        
+        loss_entropy = sess.run(cross_entropy_mean,
+                                feed_dict={x: X[start:end], y_: Y[start:end]})
+        
+        compute_loss = sess.run(loss,
+                                feed_dict={x: X[start:end], y_: Y[start:end]})
         # 保存模型
         if compute_loss < min_loss:
             min_loss = compute_loss
@@ -162,7 +166,7 @@ with tf.Session() as sess:
         summary_writer.add_summary(summary,i)
 
         # 输出
-        if i % 100:
+        if i % 100 == 0:
             print('训练了%d次后,交叉熵损失为%f,总损失为%f'%(i,loss_entropy,compute_loss))
 
 sess.close()
