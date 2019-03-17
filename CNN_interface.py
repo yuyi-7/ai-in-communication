@@ -45,7 +45,7 @@ def cnn_inference(input_tensor, output_shape, drop=None, regularizer_rate=None):
     # 卷积层使用全0填充
 
     #reshape
-    input_tensor = np.array(input_tensor).reshape([-1,64,1]).astype(np.float32)
+    input_tensor = input_tensor.reshape([-1,64,1]).astype(np.float32)
 
     # 第一层卷积层
     with tf.variable_scope('layer1-conv1'):

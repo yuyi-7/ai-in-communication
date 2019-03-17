@@ -71,7 +71,7 @@ def judge_cnn(data):
     data_after_judge = data.applymap(lambda x: mat[0] if np.sign(x) > 0 else mat[1])
     return np.array(data_after_judge)
 
-data_judged = judge_cnn(data_after_remove_voice)
+data_judged = tf.py_func(judge_cnn, [data_after_remove_voice], tf.float32)
 
 
 # 接收机的DNN
@@ -89,7 +89,7 @@ def judge_dnn(data):
     data_after_judge = data.applymap(lambda x: mat[0] if np.sign(x) > 0 else mat[1])
     return np.array(data_after_judge)
 
-y_judged = judge_dnn(y)
+y_judged = tf.py_func(judge_dnn, [y], tf.float32)
 
 # 损失函数
 cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=y_judged,
