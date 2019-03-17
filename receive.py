@@ -128,13 +128,16 @@ saver = tf.train.Saver(max_to_keep=3)
 min_loss = float('inf')
 
 #使用tensorboard
-#writer = tf.summary.FileWriter('/logs/log', tf.get_default_graph())
+#writer = tf.summary.FileWriter('/logs/log')
+
 #writer.close()
-merged = tf.summary.merge_all()
+#merged = tf.summary.merge_all()
 
 with tf.Session() as sess:
     #初始化写日志的writer,并将当前Tensorflow计算图写入日志
     summary_writer = tf.summary.FileWriter('/logs/log', sess.graph)
+    summary_writer.add_graph(sess.graph)  # 写入变量图
+
     tf.global_variables_initializer().run()  # 初始化
     for i in range(TRAINING_STEPS):
         # 设置批次
@@ -142,6 +145,12 @@ with tf.Session() as sess:
         end = min(start+BATCH_SIZE, TRAIN_NUM)
         loss_entropy = sess.run(cross_entropy_mean,
                                 feed_dict={x: X[start:end], y_: Y[start:end]})
+
+        tf.summary.scalar('cross_entropy_mean_loss', cross_entropy_mean)  # tensorboard写入交叉熵误差
+        tf.summary.scalar('loss', loss)  # tensorboard写入总误差
+
+        merged = tf.summary.merge_all()
+
         compute_loss,summary = sess.run([train_step, merged],
                                         feed_dict={x:X[start:end], y_:Y[start:end]})
         # 保存模型
