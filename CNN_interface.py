@@ -45,7 +45,7 @@ def cnn_inference(input_tensor, output_shape, drop=None, regularizer_rate=None):
     # 卷积层使用全0填充
 
     #reshape
-    input_tensor = input_tensor.reshape([-1,64,1]).astype(np.float32)
+    input_tensor = tf.reshape(input_tensor, [-1,64,1])
 
     # 第一层卷积层
     with tf.variable_scope('layer1-conv1'):
@@ -95,7 +95,8 @@ def cnn_inference(input_tensor, output_shape, drop=None, regularizer_rate=None):
     with tf.name_scope("layer6-pool3"):
         pool3 = tf.layers.max_pooling1d(relu3, pool_size=2, strides=2,
                                padding="SAME")  # 池化层，最大池化，降维一倍，过滤器边长为2，移动步长为2
-
+        
+        
         # 获取池化层的shape为一个List
         pool_shape = pool3.get_shape().as_list()
 
@@ -103,14 +104,15 @@ def cnn_inference(input_tensor, output_shape, drop=None, regularizer_rate=None):
         nodes = pool_shape[1] * pool_shape[2]
 
         # 将此层的输出变成一个batch的向量
-        reshaped = tf.reshape(pool3, [pool_shape[0], nodes])
-
+        reshaped = tf.reshape(pool3, [-1, nodes])
+        
     # 第一层密集层
     with tf.variable_scope('layer7-fc1'):
         fc1_weights = tf.get_variable("weight", [nodes, FC_SIZE],
                                       initializer=tf.truncated_normal_initializer(stddev=0.1))
         if regularizer_rate != None:
-            tf.add_to_collection('losses', tf.contrib.layers.l2_regularizer(regularizer_rate)(fc1_weights))  # 添加L2正则化
+            tf.add_to_collection('losses', 
+                                 tf.contrib.layers.l2_regularizer(regularizer_rate)(fc1_weights))  # 添加L2正则化
 
         fc1_biases = tf.get_variable("bias", [FC_SIZE], initializer=tf.constant_initializer(0.1))
 

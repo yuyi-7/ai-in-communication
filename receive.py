@@ -14,7 +14,7 @@ receive_data_after_cnn_shape = 64  # 接收机通过CNN网络之后的数据维�
 receive_cnn_DROP = 0.5  # 接收机的CNN的drop，CNN内的一个密集层的drop
 receive_cnn_REGULARIZER_RATE = 1e-4  # 接收机中CNN的密集层的正则率
 
-receive_data_shape = None  # 接收机的输出维度
+
 receive_dnn_DROP = 0.5  # 接收机的DNN的drop
 receive_dnn_REGULARIZER_RATE = 1e-4  # 接收机的DNN的正则率
 
@@ -52,24 +52,23 @@ sent_data = DNN_interface.dnn_interface(input_tensor=x,
 """
 
 # 过信道,加噪声
-data_after_channle = X * E_x + np.random.randn(TRAIN_NUM,64)  # sigma * r + mu
+X = X * E_x + np.random.randn(TRAIN_NUM,64)  # sigma * r + mu
 
 # 接收机的CNN网络
 # cnn_inference(input_tensor, output_shape, drop=None, regularizer_rate=None)
-receive_data_after_cnn = CNN_interface.cnn_inference(input_tensor=data_after_channle,
+receive_data_after_cnn = CNN_interface.cnn_inference(input_tensor=x,
                                                      output_shape=receive_data_after_cnn_shape,
                                                      drop=receive_cnn_DROP,
                                                      regularizer_rate=receive_cnn_REGULARIZER_RATE)
 
 # 移除噪声
-data_after_remove_voice = data_after_channle - receive_data_after_cnn
+data_after_remove_voice = tf.subtract(x , receive_data_after_cnn)
 
 # 判断函数
 def judge_cnn(data):
-    mat = [1,-1]
-    data = pd.DataFrame(data)
-    data_after_judge = data.applymap(lambda x: mat[0] if np.sign(x) > 0 else mat[1])
-    return np.array(data_after_judge)
+    mat = [1.0,-1.0]
+    data_after_judge = np.where(data > 0, mat[0], mat[1])
+    return data_after_judge.astype(np.float32)
 
 data_judged = tf.py_func(judge_cnn, [data_after_remove_voice], tf.float32)
 
@@ -84,15 +83,18 @@ y = DNN_interface.dnn_interface(input_tensor=data_judged,
 
 # DNN后的判断函数
 def judge_dnn(data):
-    mat = [1,0]
-    data = pd.DataFrame(data)
-    data_after_judge = data.applymap(lambda x: mat[0] if np.sign(x) > 0 else mat[1])
-    return np.array(data_after_judge)
+    
+    mat = [1.0,0.0]
+    data_after_judge = np.where(data>0, mat[0], mat[1])
+    return data_after_judge.astype(np.float32)
 
 y_judged = tf.py_func(judge_dnn, [y], tf.float32)
-
+"""
+y_judged = tf.round(y)
+y_judged = tf.where(tf.equal(y_judged,0), y_judged-1 , y_judged)
+"""
 # 损失函数
-cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=y_judged,
+cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=y_judged,
                                                                labels=y_)  # 自动one-hot编码
 cross_entropy_mean = tf.reduce_mean(cross_entropy)  # 平均交叉熵
 
@@ -141,7 +143,7 @@ with tf.Session() as sess:
         loss_entropy = sess.run(cross_entropy_mean,
                                 feed_dict={x: X[start:end], y_: Y[start:end]})
         compute_loss,summary = sess.run([train_step, merged],
-                                feed_dict={x:X[start:end], y_:Y[start:end]})
+                                        feed_dict={x:X[start:end], y_:Y[start:end]})
         # 保存模型
         if compute_loss < min_loss:
             min_loss = compute_loss

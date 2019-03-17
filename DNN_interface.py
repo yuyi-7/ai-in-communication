@@ -23,8 +23,8 @@ output layer
 def dnn_interface(input_tensor, output_shape, regularizer_rate=None, drop=None):
 
     # 第一层密集层，添加L2正则
-    with tf.variable_scope('layer1'):
-        layer1_weight = tf.get_variable('weight', [input_tensor._shape_tuple()[1], LAYER1_NODE],
+    with tf.variable_scope('dnn-layer1'):
+        layer1_weight = tf.get_variable('weight', [64, LAYER1_NODE],
                                         initializer=tf.truncated_normal_initializer(stddev=0.1))
 
         if regularizer_rate != None:
@@ -39,7 +39,7 @@ def dnn_interface(input_tensor, output_shape, regularizer_rate=None, drop=None):
             layer1 = tf.nn.dropout(layer1, drop)
 
     # 第二层密集层，添加L2正则
-    with tf.variable_scope('layer2'):
+    with tf.variable_scope('dnn-layer2'):
         layer2_weight = tf.get_variable('weight', [LAYER1_NODE, LAYER2_NODE],
                                         initializer=tf.truncated_normal_initializer(stddev=0.1))
 
@@ -55,7 +55,7 @@ def dnn_interface(input_tensor, output_shape, regularizer_rate=None, drop=None):
             layer2 = tf.nn.dropout(layer2, drop)
 
     # 第三层密集层，添加L2正则
-    with tf.variable_scope('layer3'):
+    with tf.variable_scope('dnn-layer3'):
         layer3_weight = tf.get_variable('weight', [LAYER2_NODE, LAYER3_NODE],
                                         initializer=tf.truncated_normal_initializer(stddev=0.1))
         if regularizer_rate != None:
