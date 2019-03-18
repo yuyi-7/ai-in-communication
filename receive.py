@@ -135,7 +135,7 @@ min_loss = float('inf')
 
 with tf.Session() as sess:
     #初始化写日志的writer,并将当前Tensorflow计算图写入日志
-    summary_writer = tf.summary.FileWriter('/logs/log', sess.graph)
+    summary_writer = tf.summary.FileWriter('logs/log', sess.graph)
     summary_writer.add_graph(sess.graph)  # 写入变量图
 
     tf.global_variables_initializer().run()  # 初始化
@@ -160,7 +160,7 @@ with tf.Session() as sess:
         # 保存模型
         if compute_loss < min_loss:
             min_loss = compute_loss
-            saver.save(sess, '/ckpt/min_loss_model.ckpt', global_step=i)
+            saver.save(sess, 'ckpt/min_loss_model.ckpt', global_step=i)
 
         # 写入tensorboard日志
         summary_writer.add_summary(summary,i)
