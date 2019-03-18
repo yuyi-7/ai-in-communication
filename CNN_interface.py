@@ -61,10 +61,11 @@ def cnn_inference(input_tensor, output_shape, drop=None, regularizer_rate=None):
                              padding='SAME')  # 边长为3，深度32的过滤器，过滤移动步长2，全0填充
         relu1 = tf.nn.relu(tf.nn.bias_add(conv1, conv1_biases))  # 添加偏执和激活函数
 
-    # 第一层池化层
-    with tf.name_scope("layer2-pool1"):
-        pool1 = tf.layers.max_pooling1d(relu1, pool_size=2, strides=2,
-                               padding="SAME")  # 池化层，最大池化，降维一倍，过滤器边长为2，移动步长为2
+    #
+    # # 第一层池化层
+    # with tf.name_scope("layer2-pool1"):
+    #     pool1 = tf.layers.max_pooling1d(relu1, pool_size=2, strides=2,
+    #                            padding="SAME")  # 池化层，最大池化，降维一倍，过滤器边长为2，移动步长为2
 
     # 第二层卷积层
     with tf.variable_scope("layer3-conv2"):
@@ -73,13 +74,13 @@ def cnn_inference(input_tensor, output_shape, drop=None, regularizer_rate=None):
             initializer=tf.truncated_normal_initializer(stddev=0.1))
         conv2_biases = tf.get_variable("bias", [CONV2_DEEP], initializer=tf.constant_initializer(0.0))  # 深度为64，即64个卷积核
 
-        conv2 = tf.nn.conv1d(pool1, conv2_weights, stride=2, padding='SAME')  # 与上一层连接，第二层卷积层
+        conv2 = tf.nn.conv1d(relu1, conv2_weights, stride=2, padding='SAME')  # 与上一层连接，第二层卷积层
         relu2 = tf.nn.relu(tf.nn.bias_add(conv2, conv2_biases))
 
-    # 第二层池化层
-    with tf.name_scope("layer4-pool2"):
-        pool2 = tf.layers.max_pooling1d(relu2, pool_size=2, strides=2,
-                               padding="SAME")  # 池化层，最大池化，降维一倍，过滤器边长为2，移动步长为2
+    # # 第二层池化层
+    # with tf.name_scope("layer4-pool2"):
+    #     pool2 = tf.layers.max_pooling1d(relu2, pool_size=2, strides=2,
+    #                            padding="SAME")  # 池化层，最大池化，降维一倍，过滤器边长为2，移动步长为2
 
     # 第三层卷积层
     with tf.variable_scope("layer5-conv3"):
@@ -88,14 +89,14 @@ def cnn_inference(input_tensor, output_shape, drop=None, regularizer_rate=None):
             initializer=tf.truncated_normal_initializer(stddev=0.1))
         conv3_biases = tf.get_variable("bias", [CONV3_DEEP], initializer=tf.constant_initializer(0.0))  # 深度为64，即64个卷积核
 
-        conv3 = tf.nn.conv1d(pool2, conv3_weights, stride=2, padding='SAME')  # 与上一层连接，第二层卷积层
+        conv3 = tf.nn.conv1d(relu2, conv3_weights, stride=2, padding='SAME')  # 与上一层连接，第二层卷积层
         relu3 = tf.nn.relu(tf.nn.bias_add(conv3, conv3_biases))
 
     # 第三层池化层
     with tf.name_scope("layer6-pool3"):
         pool3 = tf.layers.max_pooling1d(relu3, pool_size=2, strides=2,
                                padding="SAME")  # 池化层，最大池化，降维一倍，过滤器边长为2，移动步长为2
-        
+
         
         # 获取池化层的shape为一个List
         pool_shape = pool3.get_shape().as_list()
@@ -131,3 +132,36 @@ def cnn_inference(input_tensor, output_shape, drop=None, regularizer_rate=None):
         run = tf.matmul(fc1, fc2_weights) + fc2_biases
 
     return run
+
+
+def keras_cnn_interface(input_tensor, output_shape, drop=None, regularizer_rate=None):
+    covn1 = tf.keras.layers.Conv1D(32,3,activation='relu',
+                                   kernel_initializer=tf.truncated_normal_initializer(stddev=0.1),
+                                   bias_initializer=tf.truncated_normal_initializer(0.0))(input_tensor)
+
+    max_pool1 = tf.keras.layers.MaxPool1D(2)(covn1)
+
+    covn2 = tf.keras.layers.Conv1D(32, 3, activation='relu',
+                                   kernel_initializer=tf.truncated_normal_initializer(stddev=0.1),
+                                   bias_initializer=tf.truncated_normal_initializer(0.0))(max_pool1)
+
+    max_pool2 = tf.keras.layers.MaxPool1D(2)(covn2)
+
+    covn3 = tf.keras.layers.Conv1D(32, 3, activation='relu',
+                                   kernel_initializer=tf.truncated_normal_initializer(stddev=0.1),
+                                   bias_initializer=tf.truncated_normal_initializer(0.0))(max_pool2)
+
+    dense1 = tf.keras.layers.Dense(128, activation='relu',
+                                   kernel_initializer=tf.truncated_normal_initializer(stddev=0.1),
+                                   bias_initializer=tf.truncated_normal_initializer(0.0),
+                                   kernel_regularizer=regularizer_rate)(covn3)
+
+    dense1 = tf.nn.dropout(dense1,drop)
+
+    output = tf.keras.layers.Dense(output_shape,
+                                   kernel_initializer=tf.truncated_normal_initializer(stddev=0.1),
+                                   bias_initializer=tf.truncated_normal_initializer(0.0),
+                                   kernel_regularizer=regularizer_rate)(dense1)
+
+    return output
+
