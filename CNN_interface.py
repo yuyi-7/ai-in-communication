@@ -45,7 +45,7 @@ def cnn_inference(input_tensor, output_shape, drop=None, regularizer_rate=None):
     # 卷积层使用全0填充
 
     #reshape
-    input_tensor = tf.reshape(input_tensor, [-1,64,1])
+    input_tensor = tf.reshape(input_tensor, [-1,128,1])
 
     # 第一层卷积层
     with tf.variable_scope('layer1-conv1'):
@@ -117,7 +117,7 @@ def cnn_inference(input_tensor, output_shape, drop=None, regularizer_rate=None):
 
         fc1_biases = tf.get_variable("bias", [FC_SIZE], initializer=tf.constant_initializer(0.1))
 
-        fc1 = tf.nn.relu(tf.matmul(reshaped, fc1_weights) + fc1_biases)  # Relu激活函数
+        fc1 = tf.nn.tanh(tf.matmul(reshaped, fc1_weights) + fc1_biases)  # tanh激活函数
         if drop != None:
             fc1 = tf.nn.dropout(fc1, drop)
 
