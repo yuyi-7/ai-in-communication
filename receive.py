@@ -3,9 +3,9 @@ import CNN_interface
 import DNN_interface
 import numpy as np
 import pandas as pd
-import encode  #编码
+import encode,decode  #编码
 import time
-
+from sklearn.preprocessing import StandardScaler 
 
 INPUT_NODE = 128  # 输入节点
 OUTPUT_NODE = 64  # 输出节点
@@ -29,7 +29,7 @@ TRAIN_NUM = 20000  # 数据总量
 MOVING_AVERAGE_DECAY = 0.99  # 滑动平均衰减
 TRAINING_STEPS = 500  # 训练多少次
 
-SNR = 1   # 信噪比
+SNR = -1   # 信噪比
 
 E_x = 10 ** (0.1*SNR)  #信号能量
 
@@ -37,10 +37,10 @@ E_x = 10 ** (0.1*SNR)  #信号能量
 # 生成数据
 Y = np.random.randint(0,2,[TRAIN_NUM , OUTPUT_NODE]).astype('float32')
 #X = np.array(pd.DataFrame(Y).applymap(lambda x: 1 if x==1 else -1)).astype('float32')
-X = encode.encode2d(Y)  # TRAIN_NUM , OUTPUT_NODE / 2 * 4 one-hot   None,128
+X = encode.encode2d(Y)  # (TRAIN_NUM , OUTPUT_NODE/2 , 2)
 
 # 定义整个模型的x和y
-x = tf.placeholder(tf.float32 ,[None,INPUT_NODE], name='x_input')
+x = tf.placeholder(tf.float32 ,[None,INPUT_NODE,2], name='x_input')
 y_ = tf.placeholder(tf.float32, [None,OUTPUT_NODE], name='y-input')
 
 """
@@ -53,7 +53,11 @@ sent_data = DNN_interface.dnn_interface(input_tensor=x,
 """
 
 # 过信道,加噪声
-X = X * E_x + np.random.randn(TRAIN_NUM , INPUT_NODE)  # sigma * r + mu
+X = X * E_x + np.random.randn(TRAIN_NUM , INPUT_NODE, 2)  # sigma * r + mu
+
+#　归一化
+scale = StandardScaler()
+X_scale = scale.fit_transform(X)
 
 # 接收机的CNN网络
 # cnn_inference(input_tensor, output_shape, drop=None, regularizer_rate=None)
@@ -66,22 +70,22 @@ receive_data_after_cnn = CNN_interface.cnn_inference(input_tensor=x,
 data_after_remove_voice = tf.subtract(x , receive_data_after_cnn)
 
 # 判断函数
-def judge_cnn(data):
-    mat = [1.0,-1.0]
-    data_after_judge = np.where(data > 0, mat[0], mat[1])
-    return data_after_judge.astype(np.float32)
+# def judge_cnn(data):
+#     mat = [1.0,-1.0]
+#     data_after_judge = np.where(data > 0, mat[0], mat[1])
+#     return data_after_judge.astype(np.float32)
 
-data_judged = tf.py_func(judge_cnn, [data_after_remove_voice], tf.float32)
+data_judged = tf.py_func(decode.decode2d, [data_after_remove_voice], tf.float32)
 
 
 
 # 接收机的DNN
 # dnn_interface(input_tensor, output_shape, regularizer_rate=None, drop=None)
-y ,weight = DNN_interface.dnn_interface(input_tensor=data_judged,
-                                output_shape=OUTPUT_NODE,
-                                regularizer_rate=receive_dnn_REGULARIZER_RATE,
-                                drop=receive_dnn_DROP,
-                                )
+# y ,weight = DNN_interface.dnn_interface(input_tensor=data_judged,
+#                                 output_shape=OUTPUT_NODE,
+#                                 regularizer_rate=receive_dnn_REGULARIZER_RATE,
+#                                 drop=receive_dnn_DROP,
+#                                 )
 
 # # DNN后的判断函数
 # def judge_dnn(data):
