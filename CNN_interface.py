@@ -5,15 +5,15 @@ NUM_CHANNELS = 1  # 输入通道数
 
 # 第一层卷积层的尺寸和深度
 CONV1_DEEP = 32
-CONV1_SIZE = 3
+CONV1_SIZE = 2
 
 # 第二层卷积层的尺寸和深度
 CONV2_DEEP = 64
-CONV2_SIZE = 3
+CONV2_SIZE = 2
 
 # 第三层卷积层的尺寸和深度
 CONV3_DEEP = 64
-CONV3_SIZE = 3
+CONV3_SIZE = 2
 
 # 全连接层的节点个数
 FC_SIZE = 512
@@ -40,12 +40,12 @@ layer8 dense2  output layer
 
 
 # 定义卷积神经网络的向前传播过程
-def cnn_inference(input_tensor, output_shape, drop=None, regularizer_rate=None):
+def cnn_interface(input_tensor, output_shape, drop=None, regularizer_rate=None):
     # 使用不同的命名空间来隔离不同层的变量，不必担心重名的问题
     # 卷积层使用全0填充
 
     #reshape
-    input_tensor = tf.reshape(input_tensor, [-1,128,1])
+    input_tensor = tf.reshape(input_tensor, [-1,64,1])
 
     # 第一层卷积层
     with tf.variable_scope('layer1-conv1'):
@@ -131,37 +131,66 @@ def cnn_inference(input_tensor, output_shape, drop=None, regularizer_rate=None):
         fc2_biases = tf.get_variable("bias", [output_shape], initializer=tf.constant_initializer(0.1))
         run = tf.matmul(fc1, fc2_weights) + fc2_biases
 
+    run = tf.reshape(run, [-1, int(output_shape / 2), 2])
+
     return run
 
 
-def keras_cnn_interface(input_tensor, output_shape, drop=None, regularizer_rate=None):
-    covn1 = tf.keras.layers.Conv1D(32,3,activation='relu',
-                                   kernel_initializer=tf.truncated_normal_initializer(stddev=0.1),
-                                   bias_initializer=tf.truncated_normal_initializer(0.0))(input_tensor)
+def cnn_interface_2d(input_tensor, output_shape, drop=None, regularizer_rate=None):
 
-    max_pool1 = tf.keras.layers.MaxPool1D(2)(covn1)
+    with tf.variable_scope('layer1-conv1'):
+        conv1_weights = tf.get_variable(
+            "weight", [CONV1_SIZE, CONV1_SIZE, NUM_CHANNELS, CONV1_DEEP],
+            initializer=tf.truncated_normal_initializer(stddev=0.1))  #卷积核
 
-    covn2 = tf.keras.layers.Conv1D(32, 3, activation='relu',
-                                   kernel_initializer=tf.truncated_normal_initializer(stddev=0.1),
-                                   bias_initializer=tf.truncated_normal_initializer(0.0))(max_pool1)
+        conv1_biases = tf.get_variable("bias", [CONV1_DEEP], initializer=tf.constant_initializer(0.0))
+        conv1 = tf.nn.conv2d(input_tensor, conv1_weights, strides=[1, 1, 1, 1], padding='SAME')
+        relu1 = tf.nn.relu(tf.nn.bias_add(conv1, conv1_biases))
 
-    max_pool2 = tf.keras.layers.MaxPool1D(2)(covn2)
+    with tf.name_scope("layer2-pool1"):
+        pool1 = tf.nn.max_pool(relu1, ksize=[1, 2, 1, 1], strides=[1, 2, 1, 1], padding="SAME")
+        # ksize=[batch,height,width,channels]
 
-    covn3 = tf.keras.layers.Conv1D(32, 3, activation='relu',
-                                   kernel_initializer=tf.truncated_normal_initializer(stddev=0.1),
-                                   bias_initializer=tf.truncated_normal_initializer(0.0))(max_pool2)
 
-    dense1 = tf.keras.layers.Dense(128, activation='relu',
-                                   kernel_initializer=tf.truncated_normal_initializer(stddev=0.1),
-                                   bias_initializer=tf.truncated_normal_initializer(0.0),
-                                   kernel_regularizer=regularizer_rate)(covn3)
+    with tf.variable_scope("layer3-conv2"):
+        conv2_weights = tf.get_variable(
+            "weight", [CONV2_SIZE, CONV2_SIZE, CONV1_DEEP, CONV2_DEEP],
+            initializer=tf.truncated_normal_initializer(stddev=0.1))
+        conv2_biases = tf.get_variable("bias", [CONV2_DEEP], initializer=tf.constant_initializer(0.0))
 
-    dense1 = tf.nn.dropout(dense1,drop)
+        conv2 = tf.nn.conv2d(pool1, conv2_weights, strides=[1, 1, 1, 1], padding='SAME')
+        relu2 = tf.nn.relu(tf.nn.bias_add(conv2, conv2_biases))
 
-    output = tf.keras.layers.Dense(output_shape,
-                                   kernel_initializer=tf.truncated_normal_initializer(stddev=0.1),
-                                   bias_initializer=tf.truncated_normal_initializer(0.0),
-                                   kernel_regularizer=regularizer_rate)(dense1)
+    with tf.name_scope("layer4-pool2"):
+        pool2 = tf.nn.max_pool(relu2, ksize=[1, 2, 1, 1], strides=[1, 2, 1, 1], padding='SAME')
+        pool_shape = pool2.get_shape().as_list()
+        nodes = pool_shape[1] * pool_shape[2] * pool_shape[3]
+        reshaped = tf.reshape(pool2, [-1, nodes])
 
-    return output
+        # 第一层密集层
+    with tf.variable_scope('layer7-fc1'):
+        fc1_weights = tf.get_variable("weight", [nodes, FC_SIZE],
+                                          initializer=tf.truncated_normal_initializer(stddev=0.1))
+        if regularizer_rate != None:
+            tf.add_to_collection('losses',
+                                     tf.contrib.layers.l2_regularizer(regularizer_rate)(fc1_weights))  # 添加L2正则化
 
+        fc1_biases = tf.get_variable("bias", [FC_SIZE], initializer=tf.constant_initializer(0.1))
+
+        fc1 = tf.nn.tanh(tf.matmul(reshaped, fc1_weights) + fc1_biases)  # tanh激活函数
+        if drop != None:
+                fc1 = tf.nn.dropout(fc1, drop)
+
+        # 输出层
+    with tf.variable_scope('layer8-fc2'):
+        fc2_weights = tf.get_variable("weight", [FC_SIZE, output_shape],
+                                          initializer=tf.truncated_normal_initializer(stddev=0.1))
+
+        if regularizer_rate != None:
+            tf.add_to_collection('losses', tf.contrib.layers.l2_regularizer(regularizer_rate)(fc2_weights))
+        fc2_biases = tf.get_variable("bias", [output_shape], initializer=tf.constant_initializer(0.1))
+        run = tf.matmul(fc1, fc2_weights) + fc2_biases
+
+    run = tf.reshape(run, [-1, int(output_shape / 2), 2])
+
+    return run

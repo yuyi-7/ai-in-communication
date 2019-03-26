@@ -9,27 +9,31 @@ def encode2d(x):
 
     for i in x:
         temp = []
-
+        
         for j in range(len(i)):
             if j % 2 == 0:
                 if i[j] == 0.0:
                     if i[j + 1] == 0.0:
                         # r.append(-np.sqrt(2)/2 - np.sqrt(2)/2j)
-                        temp.append(0)
+                        temp.append([-np.sqrt(2)/2,-np.sqrt(2)/2])
+                        # temp.append(0)
                     elif i[j + 1] == 1.0:
                         # r.append(-np.sqrt(2)/2 + np.sqrt(2)/2j)
-                        temp.append(1)
+                        temp.append([-np.sqrt(2)/2,np.sqrt(2)/2])
+                        # temp.append(1)
                 elif i[j] == 1.0:
                     if i[j + 1] == 0.0:
                         # r.append(np.sqrt(2)/2 - np.sqrt(2)/2j)
-                        temp.append(2)
+                        temp.append([np.sqrt(2)/2,-np.sqrt(2)/2])
+                        # temp.append(2)
                     elif i[j + 1] == 1.0:
                         # r.append(np.sqrt(2)/2 + np.sqrt(2)/2j)
-                        temp.append(3)
+                        temp.append([np.sqrt(2)/2,np.sqrt(2)/2])
+                        # temp.append(3)
         r.append(temp)
-    r = OneHotEncoder().fit_transform(r).toarray()
+    #r = OneHotEncoder().fit_transform(r).toarray()
     #return np.array(r).reshape(shape1,shape2)
-    return r
+    return np.array(r)
 
 def encode1d(x):
     r = []

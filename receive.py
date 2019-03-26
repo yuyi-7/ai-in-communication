@@ -3,18 +3,18 @@ import CNN_interface
 import DNN_interface
 import numpy as np
 import pandas as pd
-import encode  #编码
+import encode,decode  #编码
 import time
+from sklearn.preprocessing import StandardScaler 
 
-
-INPUT_NODE = 128  # 输入节点
+INPUT_NODE = 32  # 输入节点
 OUTPUT_NODE = 64  # 输出节点
 
 sent_data_shape = None  # 发射机的输出维度
 sent_dnn_DROP = 0.5  # 发射机的DNN的drop
 sent_dnn_REGULARIZER_RATE = 1e-4  # 发射机的DNN的正则率
 
-receive_data_after_cnn_shape = 128  # 接收机通过CNN网络之后的数据维度
+receive_data_after_cnn_shape = 64  # 接收机通过CNN网络之后的数据维度
 receive_cnn_DROP = 0.5  # 接收机的CNN的drop，CNN内的一个密集层的drop
 receive_cnn_REGULARIZER_RATE = 1e-4  # 接收机中CNN的密集层的正则率
 
@@ -29,18 +29,26 @@ TRAIN_NUM = 20000  # 数据总量
 MOVING_AVERAGE_DECAY = 0.99  # 滑动平均衰减
 TRAINING_STEPS = 500  # 训练多少次
 
-SNR = 1   # 信噪比
+SNR = -8   # 信噪比
 
 E_x = 10 ** (0.1*SNR)  #信号能量
 
 
 # 生成数据
 Y = np.random.randint(0,2,[TRAIN_NUM , OUTPUT_NODE]).astype('float32')
-# X = np.array(pd.DataFrame(Y).applymap(lambda x: 1 if x==1 else -1)).astype('float32')
-X = encode.encode2d(Y)  # TRAIN_NUM , OUTPUT_NODE / 2 * 4 one-hot   None,128
+
+X = encode.encode2d(Y)  # TRAIN_NUM , OUTPUT_NODE / 2 , 2
+
+# 验证数据
+Y_vaildate = np.random.randint(0,2,[TRAIN_NUM , OUTPUT_NODE]).astype('float32')
+
+X_validate = encode.encode2d(Y)  # TRAIN_NUM , OUTPUT_NODE / 2 , 2
+
+
 
 # 定义整个模型的x和y
-x = tf.placeholder(tf.float32, [None,INPUT_NODE], name='x_input')
+x = tf.placeholder(tf.float32, [None,INPUT_NODE, 2], name='x_input')
+
 y_ = tf.placeholder(tf.float32, [None,OUTPUT_NODE], name='y-input')
 
 """
@@ -53,35 +61,25 @@ sent_data = DNN_interface.dnn_interface(input_tensor=x,
 """
 
 # 过信道,加噪声
-X = X * E_x + np.random.randn(TRAIN_NUM , INPUT_NODE)  # sigma * r + mu
+X = X * E_x + np.random.randn(TRAIN_NUM , INPUT_NODE, 2)  # sigma * r + mu
+
+x_cnn = tf.reshape(x, [-1, 64])
+
+# 批量归一化
+x_toone = tf.contrib.layers.batch_norm(x_cnn, is_training=True)
 
 # 接收机的CNN网络
-# cnn_inference(input_tensor, output_shape, drop=None, regularizer_rate=None)
-receive_data_after_cnn = CNN_interface.cnn_inference(input_tensor=x,
-                                                     output_shape=receive_data_after_cnn_shape,
-                                                     drop=receive_cnn_DROP,
-                                                     regularizer_rate=receive_cnn_REGULARIZER_RATE)
+receive_data_after_cnn = CNN_interface.cnn_interface(input_tensor=x_toone,
+                                                        output_shape=receive_data_after_cnn_shape,
+                                                        drop=receive_cnn_DROP,
+                                                        regularizer_rate=receive_cnn_REGULARIZER_RATE)
 
 # 移除噪声
 data_after_remove_voice = tf.subtract(x, receive_data_after_cnn)
 
-# 判断函数
-def judge_cnn(data):
-    mat = [1.0,-1.0]
-    data_after_judge = np.where(data > 0, mat[0], mat[1])
-    return data_after_judge.astype(np.float32)
+# 用解码函数判断
+y = tf.py_func(decode.decode2d, [data_after_remove_voice], tf.float32)
 
-data_judged = tf.py_func(judge_cnn, [data_after_remove_voice], tf.float32)
-
-
-
-# 接收机的DNN
-# dnn_interface(input_tensor, output_shape, regularizer_rate=None, drop=None)
-y ,weight = DNN_interface.dnn_interface(input_tensor=data_judged,
-                                output_shape=OUTPUT_NODE,
-                                regularizer_rate=receive_dnn_REGULARIZER_RATE,
-                                drop=receive_dnn_DROP,
-                                )
 
 # # DNN后的判断函数
 # def judge_dnn(data):
@@ -97,7 +95,7 @@ y_judged = tf.where(tf.equal(y_judged,0), y_judged-1 , y_judged)
 """
 # 损失函数
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=y,
-                                                               labels=y_)  # 自动one-hot编码
+                                                        labels=y_)  # 自动one-hot编码
 cross_entropy_mean = tf.reduce_mean(cross_entropy)  # 平均交叉熵
 
 loss = cross_entropy_mean + tf.add_n(tf.get_collection('losses'))  # 损失函数是交叉熵和正则化的和
@@ -115,9 +113,9 @@ learning_rate = tf.train.exponential_decay(LEARNING_RATE_BASE,  # 基础学习�
                                            LEARNING_RATE_DECAY,  # 学习衰减速度
                                            staircase=False)  # 是否每步都改变速率
 # 均方误差
-mse = tf.reduce_mean(tf.square(y - y_))
+bre = tf.reduce_mean(tf.square(y - y_))
 
-loss = loss + mse
+loss = loss + bre
 
 # 定义优化函数
 train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss, global_step)
@@ -141,13 +139,13 @@ min_loss = float('inf')
 
 #tf.summary.scalar('cross_entropy_mean_loss', cross_entropy_mean)  # tensorboard写入交叉熵误差
 tf.summary.scalar('loss', loss)  # tensorboard写入总误差
-tf.summary.scalar('MSE', mse)
+tf.summary.scalar('BRE', bre)
 
 summary_writer = tf.summary.FileWriter('logs/log_'+'%s'%(time.strftime('%m_%d_%H_%M')))  #tensorboard保存目录，目录以时间命名
 
 
 with tf.Session() as sess:
-    #初始化写日志的writer,并将当前Tensorflow计算图写入日志
+    # 初始化写日志的writer,并将当前Tensorflow计算图写入日志
 
     summary_writer.add_graph(sess.graph)  # 写入变量图
 
@@ -159,32 +157,35 @@ with tf.Session() as sess:
 
         merged = tf.summary.merge_all()
 
-        _,summary = sess.run([train_step, merged],
+        _, summary = sess.run([train_step, merged],
                                         feed_dict={x:X[start:end], y_:Y[start:end]})
         
-        mse_loss = sess.run(mse,
+        bre_loss = sess.run(bre,
                         feed_dict={x: X[start:end], y_: Y[start:end]})
         
         compute_loss = sess.run(loss,
                                 feed_dict={x: X[start:end], y_: Y[start:end]})
-        # 保存模型
-        if compute_loss < min_loss:
-            min_loss = compute_loss
-            saver.save(sess, 'ckpt/min_loss_model.ckpt', global_step=i)
+
+        validate_loss = sess.run(loss,
+                                feed_dict={x: X_validate[start:end], y_: Y_vaildate[start:end]})
+        # # 保存模型
+        # if compute_loss < min_loss:
+        #     min_loss = compute_loss
+        #     saver.save(sess, 'ckpt/min_loss_model.ckpt', global_step=i)
 
         # 写入tensorboard日志
         summary_writer.add_summary(summary,i)
 
         # 输出
         if i % 100 == 0:
-            print('训练了%d次,总损失%f,mse为%f'%(i,compute_loss,mse_loss))
+            print('训练了%d次,总损失%f,bre为%f,验证损失%f'%(i,compute_loss,bre_loss,validate_loss))
 
         if (i % (TRAINING_STEPS-1) == 0) and (i != 0):
-            print('模型预测结果:',sess.run(y , feed_dict={x: X[start:end], y_: Y[start:end]}))
-            print('实际结果:',sess.run(y_ , feed_dict={x: X[start:end], y_: Y[start:end]}))
-            print('加上噪声:', sess.run(x, feed_dict={x: X[start:end], y_: Y[start:end]}))
-            print('去掉噪声:', sess.run(data_after_remove_voice, feed_dict={x: X[start:end], y_: Y[start:end]}))
-            print('判断:', sess.run(data_judged, feed_dict={x: X[start:end], y_: Y[start:end]}))
+            print('模型预测结果:',sess.run(y , feed_dict={x: X[start:start+1], y_: Y[start:start+1]}))
+            print('实际结果:',sess.run(y_ , feed_dict={x: X[start:start+1], y_: Y[start:start+1]}))
+            print('加上噪声:', sess.run(x, feed_dict={x: X[start:start+1], y_: Y[start:start+1]}))
+            print('去掉噪声:', sess.run(data_after_remove_voice, feed_dict={x: X[start:start+1], y_: Y[start:start+1]}))
+            print('批归一化:', sess.run(x_cnn, feed_dict={x: X[start:start+1], y_: Y[start:start+1]}))
             # print('DNN后:', sess.run(y, feed_dict={x: X[start:end], y_: Y[start:end]}))
             # print('weight:', sess.run(weight, feed_dict={x: X[start:end], y_: Y[start:end]}))
 

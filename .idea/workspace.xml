@@ -2,7 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6f462ca5-76a5-4541-89c2-5aa7c1d8fe18" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/decode.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logs/log/events.out.tfevents.1552920473.MicroWin10-0938" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CNN_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/CNN_interface.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/encode.py" beforeDir="false" afterPath="$PROJECT_DIR$/encode.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/keras_receive.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/receive.py" beforeDir="false" afterPath="$PROJECT_DIR$/receive.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -20,8 +25,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/CNN_interface.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="828">
-              <caret line="47" column="29" selection-start-line="47" selection-start-column="22" selection-end-line="47" selection-end-column="29" />
+            <state relative-caret-position="194">
+              <caret line="133" column="57" selection-start-line="133" selection-start-column="57" selection-end-line="133" selection-end-column="57" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -41,7 +46,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cnn_and_dnn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="36">
+            <state relative-caret-position="-1933">
               <caret line="4" selection-start-line="4" selection-end-line="4" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
@@ -51,14 +56,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/receive.py">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/decode.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="324">
-              <caret line="42" column="29" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="29" />
-              <folding>
-                <element signature="e#0#23#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="371">
+              <caret line="26" selection-start-line="26" selection-end-line="26" />
             </state>
           </provider>
         </entry>
@@ -66,11 +68,20 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/encode.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="504">
-              <caret line="31" column="12" selection-start-line="31" selection-start-column="12" selection-end-line="31" selection-end-column="12" />
+            <state relative-caret-position="830">
+              <caret line="60" column="2" selection-start-line="60" selection-start-column="2" selection-end-line="60" selection-end-column="54" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/receive.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="326">
+              <caret line="176" column="37" lean-forward="true" selection-start-line="176" selection-start-column="37" selection-end-line="176" selection-end-column="37" />
             </state>
           </provider>
         </entry>
@@ -89,6 +100,7 @@
       <find>INPUT_SIZE</find>
       <find>receive_data_shape</find>
       <find>receive_dnn_DROP</find>
+      <find>end</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -103,9 +115,10 @@
         <option value="$PROJECT_DIR$/logs/keras_dnn_receive.py" />
         <option value="$PROJECT_DIR$/test.py" />
         <option value="$PROJECT_DIR$/encode.py" />
-        <option value="$PROJECT_DIR$/CNN_interface.py" />
         <option value="$PROJECT_DIR$/DNN_interface.py" />
+        <option value="$PROJECT_DIR$/decode.py" />
         <option value="$PROJECT_DIR$/receive.py" />
+        <option value="$PROJECT_DIR$/CNN_interface.py" />
       </list>
     </option>
   </component>
@@ -120,7 +133,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -128,15 +140,11 @@
               <item name="CNN" type="b2602c69:ProjectViewProjectNode" />
               <item name="CNN" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="CNN" type="b2602c69:ProjectViewProjectNode" />
-              <item name="CNN" type="462c0819:PsiDirectoryNode" />
-              <item name="logs" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -158,20 +166,17 @@
     </option>
   </component>
   <component name="RunManager" selected="Python.receive">
-    <configuration name="DNN_interface" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="CNN_interface" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="CNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/DNN_interface.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/CNN_interface.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -250,9 +255,6 @@
       <module name="CNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -291,19 +293,19 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.DNN_interface" />
       <item itemvalue="Python.receive" />
       <item itemvalue="Python.keras_dnn_receive" />
       <item itemvalue="Python.test" />
       <item itemvalue="Python.encode" />
+      <item itemvalue="Python.CNN_interface" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.receive" />
+        <item itemvalue="Python.CNN_interface" />
         <item itemvalue="Python.encode" />
         <item itemvalue="Python.test" />
         <item itemvalue="Python.keras_dnn_receive" />
-        <item itemvalue="Python.DNN_interface" />
       </list>
     </recent_temporary>
   </component>
@@ -325,6 +327,9 @@
       <workItem from="1552979910938" duration="7561000" />
       <workItem from="1553132841277" duration="854000" />
       <workItem from="1553245303759" duration="599000" />
+      <workItem from="1553620969098" duration="626000" />
+      <workItem from="1553623095855" duration="125000" />
+      <workItem from="1553623267294" duration="7760000" />
     </task>
     <task id="LOCAL-00001" summary="modefiy the py_fuc of tensorflow">
       <created>1552815625639</created>
@@ -379,7 +384,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="27316000" />
+    <option name="totallyTimeSpent" value="35827000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -392,8 +397,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1920" y="0" width="1600" height="900" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20860077" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21630295" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -408,7 +414,7 @@
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32862645" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="12" visible="true" weight="0.33632863" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="12" visible="true" weight="0.30038512" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -449,12 +455,12 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test.py" />
-    <entry file="file://$PROJECT_DIR$/CNN_interface.py">
+    <entry file="file://$PROJECT_DIR$/encode.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="828">
-          <caret line="47" column="29" selection-start-line="47" selection-start-column="22" selection-end-line="47" selection-end-column="29" />
+        <state relative-caret-position="830">
+          <caret line="60" column="2" selection-start-line="60" selection-start-column="2" selection-end-line="60" selection-end-column="54" />
           <folding>
-            <element signature="e#0#23#0" expanded="true" />
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -466,9 +472,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/decode.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="371">
+          <caret line="26" selection-start-line="26" selection-end-line="26" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/cnn_and_dnn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="36">
+        <state relative-caret-position="-1933">
           <caret line="4" selection-start-line="4" selection-end-line="4" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
@@ -477,23 +490,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/encode.py">
+    <entry file="file://$PROJECT_DIR$/CNN_interface.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="504">
-          <caret line="31" column="12" selection-start-line="31" selection-start-column="12" selection-end-line="31" selection-end-column="12" />
+        <state relative-caret-position="194">
+          <caret line="133" column="57" selection-start-line="133" selection-start-column="57" selection-end-line="133" selection-end-column="57" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#0#23#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/receive.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="42" column="29" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="29" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="326">
+          <caret line="176" column="37" lean-forward="true" selection-start-line="176" selection-start-column="37" selection-end-line="176" selection-end-column="37" />
         </state>
       </provider>
     </entry>
