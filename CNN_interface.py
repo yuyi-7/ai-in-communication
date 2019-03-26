@@ -82,19 +82,19 @@ def cnn_interface(input_tensor, output_shape, drop=None, regularizer_rate=None):
     #     pool2 = tf.layers.max_pooling1d(relu2, pool_size=2, strides=2,
     #                            padding="SAME")  # 池化层，最大池化，降维一倍，过滤器边长为2，移动步长为2
 
-    # 第三层卷积层
-    with tf.variable_scope("layer5-conv3"):
-        conv3_weights = tf.get_variable(
-            "weight", [ CONV3_SIZE, CONV2_DEEP, CONV3_DEEP],
-            initializer=tf.truncated_normal_initializer(stddev=0.1))
-        conv3_biases = tf.get_variable("bias", [CONV3_DEEP], initializer=tf.constant_initializer(0.0))  # 深度为64，即64个卷积核
-
-        conv3 = tf.nn.conv1d(relu2, conv3_weights, stride=2, padding='SAME')  # 与上一层连接，第二层卷积层
-        relu3 = tf.nn.relu(tf.nn.bias_add(conv3, conv3_biases))
+    # # 第三层卷积层
+    # with tf.variable_scope("layer5-conv3"):
+    #     conv3_weights = tf.get_variable(
+    #         "weight", [ CONV3_SIZE, CONV2_DEEP, CONV3_DEEP],
+    #         initializer=tf.truncated_normal_initializer(stddev=0.1))
+    #     conv3_biases = tf.get_variable("bias", [CONV3_DEEP], initializer=tf.constant_initializer(0.0))  # 深度为64，即64个卷积核
+    #
+    #     conv3 = tf.nn.conv1d(relu2, conv3_weights, stride=2, padding='SAME')  # 与上一层连接，第二层卷积层
+    #     relu3 = tf.nn.relu(tf.nn.bias_add(conv3, conv3_biases))
 
     # 第三层池化层
     with tf.name_scope("layer6-pool3"):
-        pool3 = tf.layers.max_pooling1d(relu3, pool_size=2, strides=2,
+        pool3 = tf.layers.max_pooling1d(relu2, pool_size=2, strides=2,
                                padding="SAME")  # 池化层，最大池化，降维一倍，过滤器边长为2，移动步长为2
 
         
