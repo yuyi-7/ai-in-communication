@@ -36,11 +36,11 @@ E_x = 10 ** (0.1*SNR)  #信号能量
 
 # 生成数据
 Y = np.random.randint(0,2,[TRAIN_NUM , OUTPUT_NODE]).astype('float32')
-#X = np.array(pd.DataFrame(Y).applymap(lambda x: 1 if x==1 else -1)).astype('float32')
+# X = np.array(pd.DataFrame(Y).applymap(lambda x: 1 if x==1 else -1)).astype('float32')
 X = encode.encode2d(Y)  # TRAIN_NUM , OUTPUT_NODE / 2 * 4 one-hot   None,128
 
 # 定义整个模型的x和y
-x = tf.placeholder(tf.float32 ,[None,INPUT_NODE], name='x_input')
+x = tf.placeholder(tf.float32, [None,INPUT_NODE], name='x_input')
 y_ = tf.placeholder(tf.float32, [None,OUTPUT_NODE], name='y-input')
 
 """
@@ -63,7 +63,7 @@ receive_data_after_cnn = CNN_interface.cnn_inference(input_tensor=x,
                                                      regularizer_rate=receive_cnn_REGULARIZER_RATE)
 
 # 移除噪声
-data_after_remove_voice = tf.subtract(x , receive_data_after_cnn)
+data_after_remove_voice = tf.subtract(x, receive_data_after_cnn)
 
 # 判断函数
 def judge_cnn(data):

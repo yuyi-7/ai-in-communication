@@ -2,24 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6f462ca5-76a5-4541-89c2-5aa7c1d8fe18" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/encode.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CNN_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/CNN_interface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DNN_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/DNN_interface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/keras_dnn_receive.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/log/events.out.tfevents.1552880239.yuyi-PC" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/log/events.out.tfevents.1552880489.yuyi-PC" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/log/events.out.tfevents.1552880527.yuyi-PC" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/log/events.out.tfevents.1552881054.yuyi-PC" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/log/events.out.tfevents.1552881226.yuyi-PC" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/log/events.out.tfevents.1552881529.yuyi-PC" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/log/events.out.tfevents.1552885213.yuyi-PC" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/log/events.out.tfevents.1552886037.yuyi-PC" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/log/events.out.tfevents.1552886360.yuyi-PC" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/log/events.out.tfevents.1552887697.yuyi-PC" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/log/events.out.tfevents.1552888433.yuyi-PC" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/log/events.out.tfevents.1552890491.yuyi-PC" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/log/events.out.tfevents.1552891919.yuyi-PC" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/receive.py" beforeDir="false" afterPath="$PROJECT_DIR$/receive.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -37,7 +20,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/CNN_interface.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1260">
+            <state relative-caret-position="828">
               <caret line="47" column="29" selection-start-line="47" selection-start-column="22" selection-end-line="47" selection-end-column="29" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
@@ -49,7 +32,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/DNN_interface.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-954">
+            <state relative-caret-position="288">
               <caret line="16" column="16" selection-start-line="16" selection-start-column="16" selection-end-line="16" selection-end-column="16" />
             </state>
           </provider>
@@ -58,7 +41,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cnn_and_dnn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-396">
+            <state relative-caret-position="36">
               <caret line="4" selection-start-line="4" selection-end-line="4" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
@@ -71,8 +54,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/receive.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="128">
-              <caret line="142" column="50" lean-forward="true" selection-start-line="142" selection-start-column="50" selection-end-line="142" selection-end-column="50" />
+            <state relative-caret-position="324">
+              <caret line="42" column="29" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="29" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -83,7 +66,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/encode.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="450">
+            <state relative-caret-position="504">
               <caret line="31" column="12" selection-start-line="31" selection-start-column="12" selection-end-line="31" selection-end-column="12" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -267,6 +250,9 @@
       <module name="CNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -286,6 +272,9 @@
       <module name="CNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -333,7 +322,9 @@
       <workItem from="1552889157535" duration="4577000" />
       <workItem from="1552962062914" duration="1493000" />
       <workItem from="1552973050055" duration="2091000" />
-      <workItem from="1552979910938" duration="7528000" />
+      <workItem from="1552979910938" duration="7561000" />
+      <workItem from="1553132841277" duration="854000" />
+      <workItem from="1553245303759" duration="599000" />
     </task>
     <task id="LOCAL-00001" summary="modefiy the py_fuc of tensorflow">
       <created>1552815625639</created>
@@ -377,11 +368,18 @@
       <option name="project" value="LOCAL" />
       <updated>1552892574050</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="add one-hot and modify the shape of model">
+      <created>1552987468246</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1552987468246</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="25830000" />
+    <option name="totallyTimeSpent" value="27316000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -394,9 +392,8 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1920" y="0" width="1600" height="900" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20346598" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20860077" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -429,7 +426,8 @@
     <MESSAGE value="modify sess.run function and print judge condition" />
     <MESSAGE value="modify tensorboard and saver path" />
     <MESSAGE value="modify dnn" />
-    <option name="LAST_COMMIT_MESSAGE" value="modify dnn" />
+    <MESSAGE value="add one-hot and modify the shape of model" />
+    <option name="LAST_COMMIT_MESSAGE" value="add one-hot and modify the shape of model" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/../H_D_it_Net/load_model.py">
@@ -439,16 +437,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/logs/keras_dnn_receive.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="75" column="62" selection-start-line="75" selection-start-column="51" selection-end-line="75" selection-end-column="62" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/logs/keras_dnn_receive.py" />
     <entry file="file://$PROJECT_DIR$/keras_receive.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1548">
@@ -459,16 +448,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test.py">
+    <entry file="file://$PROJECT_DIR$/test.py" />
+    <entry file="file://$PROJECT_DIR$/CNN_interface.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="108">
-          <caret line="6" column="10" lean-forward="true" selection-end-line="21" selection-end-column="9" />
+        <state relative-caret-position="828">
+          <caret line="47" column="29" selection-start-line="47" selection-start-column="22" selection-end-line="47" selection-end-column="29" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DNN_interface.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="16" column="16" selection-start-line="16" selection-start-column="16" selection-end-line="16" selection-end-column="16" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cnn_and_dnn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-396">
+        <state relative-caret-position="36">
           <caret line="4" selection-start-line="4" selection-end-line="4" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
@@ -479,7 +479,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/encode.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
+        <state relative-caret-position="504">
           <caret line="31" column="12" selection-start-line="31" selection-start-column="12" selection-end-line="31" selection-end-column="12" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
@@ -487,27 +487,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CNN_interface.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1260">
-          <caret line="47" column="29" selection-start-line="47" selection-start-column="22" selection-end-line="47" selection-end-column="29" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DNN_interface.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-954">
-          <caret line="16" column="16" selection-start-line="16" selection-start-column="16" selection-end-line="16" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/receive.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="142" column="50" lean-forward="true" selection-start-line="142" selection-start-column="50" selection-end-line="142" selection-end-column="50" />
+        <state relative-caret-position="324">
+          <caret line="42" column="29" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="29" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
           </folding>
