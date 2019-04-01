@@ -25,7 +25,7 @@ def dnn_interface(input_tensor, output_shape, regularizer_rate=None, drop=None):
     wight = []
     # 第一层密集层，添加L2正则
     with tf.variable_scope('dnn-layer1'):
-        layer1_weight = tf.get_variable('weight', [128, LAYER1_NODE],
+        layer1_weight = tf.get_variable('weight', [64, LAYER1_NODE],
                                         initializer=tf.truncated_normal_initializer(stddev=0.1))
 
         if regularizer_rate != None:
@@ -89,5 +89,6 @@ def dnn_interface(input_tensor, output_shape, regularizer_rate=None, drop=None):
 
         wight.append(layer4_weight)
 
-    return layer4,wight
+    layer4 = tf.reshape(layer4, [-1, int(output_shape/2) ,2])
+    return layer4, wight
 

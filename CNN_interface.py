@@ -107,33 +107,32 @@ def cnn_interface(input_tensor, output_shape, drop=None, regularizer_rate=None):
         # 将此层的输出变成一个batch的向量
         reshaped = tf.reshape(pool3, [-1, nodes])
         
-    # 第一层密集层
-    with tf.variable_scope('layer7-fc1'):
-        fc1_weights = tf.get_variable("weight", [nodes, FC_SIZE],
-                                      initializer=tf.truncated_normal_initializer(stddev=0.1))
-        if regularizer_rate != None:
-            tf.add_to_collection('losses', 
-                                 tf.contrib.layers.l2_regularizer(regularizer_rate)(fc1_weights))  # 添加L2正则化
+    # # 第一层密集层
+    # with tf.variable_scope('layer7-fc1'):
+    #     fc1_weights = tf.get_variable("weight", [nodes, FC_SIZE],
+    #                                   initializer=tf.truncated_normal_initializer(stddev=0.1))
+    #     if regularizer_rate != None:
+    #         tf.add_to_collection('losses',
+    #                              tf.contrib.layers.l2_regularizer(regularizer_rate)(fc1_weights))  # 添加L2正则化
+    #
+    #     fc1_biases = tf.get_variable("bias", [FC_SIZE], initializer=tf.constant_initializer(0.1))
+    #
+    #     fc1 = tf.matmul(reshaped, fc1_weights) + fc1_biases  # tanh激活函数
 
-        fc1_biases = tf.get_variable("bias", [FC_SIZE], initializer=tf.constant_initializer(0.1))
-
-        fc1 = tf.nn.tanh(tf.matmul(reshaped, fc1_weights) + fc1_biases)  # tanh激活函数
-        if drop != None:
-            fc1 = tf.nn.dropout(fc1, drop)
 
     # 输出层
     with tf.variable_scope('layer8-fc2'):
-        fc2_weights = tf.get_variable("weight", [FC_SIZE, output_shape],
+        fc2_weights = tf.get_variable("weight", [nodes, output_shape],
                                       initializer=tf.truncated_normal_initializer(stddev=0.1))
 
         if regularizer_rate != None:
             tf.add_to_collection('losses', tf.contrib.layers.l2_regularizer(regularizer_rate)(fc2_weights))
         fc2_biases = tf.get_variable("bias", [output_shape], initializer=tf.constant_initializer(0.1))
-        run = tf.matmul(fc1, fc2_weights) + fc2_biases
+        run = tf.matmul(reshaped, fc2_weights) + fc2_biases
 
     run = tf.reshape(run, [-1, int(output_shape / 2), 2])
 
-    return run
+    return run, fc2_weights
 
 
 def cnn_interface_2d(input_tensor, output_shape, drop=None, regularizer_rate=None):

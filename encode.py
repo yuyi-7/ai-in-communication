@@ -31,8 +31,9 @@ def encode2d(x):
                         temp.append([np.sqrt(2)/2,np.sqrt(2)/2])
                         # temp.append(3)
         r.append(temp)
-    #r = OneHotEncoder().fit_transform(r).toarray()
-    #return np.array(r).reshape(shape1,shape2)
+
+    # r = OneHotEncoder().fit_transform(r).toarray()
+    # return np.array(r).reshape(shape1,shape2)
     return np.array(r)
 
 def encode1d(x):
