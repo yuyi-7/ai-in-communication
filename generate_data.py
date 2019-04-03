@@ -8,7 +8,7 @@ def generate_bit(shape):
 
     for i in range(int(row)):
         # bar.set_description('Processing %d row'%i)
-        col_list = list(np.random.randint(0, 2, [64, ]))
+        col_list = list(np.random.randint(0, 2, [int(col), ]))
         row_list.append(col_list)
 
     return np.array(row_list).astype(np.float32)

@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 from sklearn.preprocessing import OneHotEncoder
 
@@ -34,6 +33,35 @@ def encode2d(x):
 
     # r = OneHotEncoder().fit_transform(r).toarray()
     # return np.array(r).reshape(shape1,shape2)
+    return np.array(r)
+
+
+def encode2d_onehot(x):
+    r = []
+
+    for i in x:
+        temp = []
+
+        for j in range(len(i)):
+            if j % 2 == 0:
+                if i[j] == 0.0:
+                    if i[j + 1] == 0.0:
+                        # temp.append(-np.sqrt(2)/2 - np.sqrt(2)/2j)
+                        temp.append(0)
+                    elif i[j + 1] == 1.0:
+                        # temp.append(-np.sqrt(2)/2 + np.sqrt(2)/2j)
+                        temp.append(1)
+                elif i[j] == 1.0:
+                    if i[j + 1] == 0.0:
+                        # temp.append(np.sqrt(2)/2 - np.sqrt(2)/2j)
+                        temp.append(2)
+                    elif i[j + 1] == 1.0:
+                        # temp.append(np.sqrt(2)/2 + np.sqrt(2)/2j)
+                        temp.append(3)
+        r.append(temp)
+
+    r = OneHotEncoder().fit_transform(r).toarray()
+
     return np.array(r)
 
 def encode1d(x):
