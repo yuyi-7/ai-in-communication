@@ -5,8 +5,9 @@ from tensorflow import keras
 # import keras.backend as K
 import numpy as np
 import decode, encode
-
+import generate_data
 import os
+
 os.environ['KERAS_BACKEND'] = 'tensorflow'
 
 INPUT_NODE = 32  # 输入节点
@@ -14,10 +15,10 @@ OUTPUT_NODE = 64  # 输出节点
 
 LEARNING_RATE_BASE = 0.01 # 模型基础学习速率
 LEARNING_RATE_DECAY = 0.99  # 学习衰减速度
-BATCH_SIZE = 200  # 一批数据量
-TRAIN_NUM = 20000  # 数据总量
+BATCH_SIZE = 100  # 一批数据量
+TRAIN_NUM = 2000  # 数据总量
 MOVING_AVERAGE_DECAY = 0.99  # 滑动平均衰减
-TRAINING_STEPS = 500  # 训练多少次
+TRAINING_STEPS = 1000  # 训练多少次
 
 SNR = -2   # 信噪比
 
@@ -25,17 +26,18 @@ E_x = 10 ** (0.1*SNR)  # 信号能量
 
 
 # 生成数据
-Y = np.random.randint(0,2,[TRAIN_NUM , OUTPUT_NODE]).astype('float32')
+# Y = np.random.randint(0,2,[TRAIN_NUM , OUTPUT_NODE]).astype('float32')
+Y = generate_data.generate_bit([TRAIN_NUM, OUTPUT_NODE])  # 让数据的0和1的概率都相同
 
 X = encode.encode2d(Y)  # TRAIN_NUM , OUTPUT_NODE / 2 , 2
 
 # 验证数据
-Y_vaildate = np.random.randint(0,2,[TRAIN_NUM , OUTPUT_NODE]).astype('float32')
+Y_vaildate = generate_data.generate_bit([TRAIN_NUM, OUTPUT_NODE])
 
 X_validate = encode.encode2d(Y)  # TRAIN_NUM , OUTPUT_NODE / 2 , 2
 
 # 加噪声
-noise = np.random.randn(TRAIN_NUM , INPUT_NODE, 2) # sigma * r + mu
+noise = np.random.randn(TRAIN_NUM, INPUT_NODE, 2)  # sigma * r + mu
 X = X * E_x + noise
 
 # 定义整个模型的x和y
@@ -45,30 +47,8 @@ y_ = tf.placeholder(tf.float32, [None, OUTPUT_NODE], name='y-input')
 
 noise_ = tf.placeholder(tf.float32, [None, INPUT_NODE, 2], name='noise')
 
-# 把虚部放在一起，实部放在一起,顺便归一化
-def reshape_dim(a):
-    temp = []
-    a_mean = np.mean(a)
-    a_std = np.std(a)
 
-    for i in range(np.array(a).shape[0]):
-        temp1 = []
-        temp2 = []
-
-        for j in a[i]:
-            j_0 = (j[0] - a_mean) / a_std
-            j_1 = (j[0] - a_mean) / a_std
-            temp1.append(j_0)
-            temp2.append(j_1)
-        temp1.extend(temp2)
-        temp.append(temp1)
-    return np.array(temp).astype(np.float32)
-
-
-# input_ = layers.Input(shape=(None, INPUT_NODE, 2))  # 模型输入
-
-
-input_cnn = tf.reshape(x, [-1, OUTPUT_NODE, 1])
+input_cnn = tf.contrib.layers.batch_norm(tf.reshape(x, [-1, OUTPUT_NODE, 1]), is_training=True)  # reshape + norm
 
 model_cnn = keras.layers.Conv1D(32, 4, activation='relu', input_shape=(None, OUTPUT_NODE, 1))(input_cnn)  # 第一层卷积层
 
@@ -115,7 +95,8 @@ history = model.fit({'x_input': X,
 #
 # loss = cross_entropy_mean
 
-loss = tf.reduce_sum(tf.square(receive_data_after_cnn - noise_))  # cnn输出的噪声和加性噪声的均方误差
+# MSE
+loss = tf.reduce_mean(tf.square(receive_data_after_cnn - noise_))  # cnn输出的噪声和加性噪声的均方误差
 
 # 优化器
 # 定义当前迭代轮数的变量
@@ -153,8 +134,6 @@ with tf.Session() as sess:
         start = (i * BATCH_SIZE) % TRAIN_NUM
         end = min(start + BATCH_SIZE, TRAIN_NUM)
 
-        #merged = tf.summary.merge_all()
-
         sess.run(train_step, feed_dict={x: X[start:end], y_: Y[start:end], noise_: noise[start:end]})
 
         ber_loss = sess.run(ber,
@@ -172,12 +151,12 @@ with tf.Session() as sess:
         if i % 100 == 0:
             print('训练了%d次,总损失%f,ber为%f,验证损失%f' % (i, compute_loss, ber_loss, validate_loss))
 
-        # if (i % (TRAINING_STEPS - 1) == 0) and (i != 0):
-        #     print('模型预测结果:', sess.run(y, feed_dict={x: X[start:start + 1], y_: Y[start:start + 1]}))
-        #     print('实际结果:', sess.run(y_, feed_dict={x: X[start:start + 1], y_: Y[start:start + 1]}))
-        #     print('加上噪声:', sess.run(x, feed_dict={x: X[start:start + 1], y_: Y[start:start + 1]}))
-        #     print('去掉噪声:', sess.run(data_after_remove_voice, feed_dict={x: X[start:start + 1], y_: Y[start:start + 1]}))
-        #     # print('批归一化:', sess.run(x_cnn, feed_dict={x: X[start:start+1], y_: Y[start:start+1]}))
+        if (i % 500 == 0) and (i != 0):
+            print('模型预测结果:', sess.run(y, feed_dict={x: X[start:start + 1], y_: Y[start:start + 1]}))
+            print('实际结果:', sess.run(y_, feed_dict={x: X[start:start + 1], y_: Y[start:start + 1]}))
+            print('加上噪声:', sess.run(x, feed_dict={x: X[start:start + 1], y_: Y[start:start + 1]}))
+            print('去掉噪声:', sess.run(data_after_remove_voice, feed_dict={x: X[start:start + 1], y_: Y[start:start + 1]}))
+            print('批归一化:', sess.run(input_cnn, feed_dict={x: X[start:start+1], y_: Y[start:start+1]}))
         #     # print('DNN后:', sess.run(y, feed_dict={x: X[start:end], y_: Y[start:end]}))
         #     print('weight:', sess.run(weight, feed_dict={x: X[start:end], y_: Y[start:end]}))
 

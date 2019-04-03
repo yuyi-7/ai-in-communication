@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6f462ca5-76a5-4541-89c2-5aa7c1d8fe18" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/generate_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cnn_and_dnn.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/keras_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/keras_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/receive.py" beforeDir="false" afterPath="$PROJECT_DIR$/receive.py" afterDir="false" />
     </list>
@@ -51,7 +53,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/encode.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="378">
+            <state relative-caret-position="56">
               <caret line="24" column="39" selection-start-line="24" selection-start-column="39" selection-end-line="24" selection-end-column="39" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -61,10 +63,19 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/generate_data.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="144">
+              <caret line="8" column="28" selection-start-line="8" selection-start-column="28" selection-end-line="8" selection-end-column="28" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/receive.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3834">
-              <caret line="220" column="12" selection-start-line="124" selection-end-line="220" selection-end-column="12" />
+            <state relative-caret-position="162">
+              <caret line="86" column="64" lean-forward="true" selection-start-line="86" selection-start-column="48" selection-end-line="86" selection-end-column="64" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -75,11 +86,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/keras_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="138" lean-forward="true" selection-start-line="138" selection-end-line="138" />
+            <state relative-caret-position="-72">
+              <caret line="17" column="25" lean-forward="true" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="25" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
-                <element signature="e#1088#1492#0" />
               </folding>
             </state>
           </provider>
@@ -123,6 +133,7 @@
         <option value="$PROJECT_DIR$/encode.py" />
         <option value="$PROJECT_DIR$/DNN_interface.py" />
         <option value="$PROJECT_DIR$/receive.py" />
+        <option value="$PROJECT_DIR$/generate_data.py" />
         <option value="$PROJECT_DIR$/keras_test.py" />
       </list>
     </option>
@@ -341,7 +352,8 @@
       <workItem from="1553769503386" duration="4599000" />
       <workItem from="1553774300001" duration="3239000" />
       <workItem from="1554091728647" duration="9967000" />
-      <workItem from="1554285772846" duration="1290000" />
+      <workItem from="1554285772846" duration="1628000" />
+      <workItem from="1554298857232" duration="5576000" />
     </task>
     <task id="LOCAL-00001" summary="modefiy the py_fuc of tensorflow">
       <created>1552815625639</created>
@@ -392,11 +404,18 @@
       <option name="project" value="LOCAL" />
       <updated>1552987468246</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="modify loss function to MSE plus BER">
+      <created>1554287131442</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1554287131442</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="56194000" />
+    <option name="totallyTimeSpent" value="62108000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -409,9 +428,8 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1920" y="0" width="1600" height="900" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.22593068" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.22849807" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -426,7 +444,7 @@
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32862645" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="12" visible="true" weight="0.33632863" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="12" visible="true" weight="0.394095" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -445,7 +463,8 @@
     <MESSAGE value="modify tensorboard and saver path" />
     <MESSAGE value="modify dnn" />
     <MESSAGE value="add one-hot and modify the shape of model" />
-    <option name="LAST_COMMIT_MESSAGE" value="add one-hot and modify the shape of model" />
+    <MESSAGE value="modify loss function to MSE plus BER" />
+    <option name="LAST_COMMIT_MESSAGE" value="modify loss function to MSE plus BER" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/../H_D_it_Net/load_model.py">
@@ -462,10 +481,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-826">
           <caret line="4" selection-start-line="4" selection-end-line="4" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-            <marker date="1552814465342" expanded="true" signature="929:931" ph="..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -495,7 +510,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/encode.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
+        <state relative-caret-position="56">
           <caret line="24" column="39" selection-start-line="24" selection-start-column="39" selection-end-line="24" selection-end-column="39" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
@@ -505,21 +520,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/receive.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3834">
-          <caret line="220" column="12" selection-start-line="124" selection-end-line="220" selection-end-column="12" />
+        <state relative-caret-position="162">
+          <caret line="86" column="64" lean-forward="true" selection-start-line="86" selection-start-column="48" selection-end-line="86" selection-end-column="64" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/generate_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="8" column="28" selection-start-line="8" selection-start-column="28" selection-end-line="8" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/keras_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="138" lean-forward="true" selection-start-line="138" selection-end-line="138" />
+        <state relative-caret-position="-72">
+          <caret line="17" column="25" lean-forward="true" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="25" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
-            <element signature="e#1088#1492#0" />
           </folding>
         </state>
       </provider>

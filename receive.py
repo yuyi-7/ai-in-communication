@@ -2,10 +2,8 @@ import tensorflow as tf
 import CNN_interface
 import DNN_interface
 import numpy as np
-import pandas as pd
-import encode,decode  #编码
+import encode, decode  # 编码
 import time
-from functools import reduce
 
 INPUT_NODE = 32  # 输入节点
 OUTPUT_NODE = 64  # 输出节点
@@ -31,25 +29,24 @@ TRAINING_STEPS = 500  # 训练多少次
 
 SNR = 5   # 信噪比
 
-E_x = 10 ** (0.1*SNR)  #信号能量
+E_x = 10 ** (0.1*SNR)  # 信号能量
 
 
 # 生成数据
-Y = np.random.randint(0,2,[TRAIN_NUM , OUTPUT_NODE]).astype('float32')
+Y = np.random.randint(0, 2, [TRAIN_NUM, OUTPUT_NODE]).astype('float32')
 
 X = encode.encode2d(Y)  # TRAIN_NUM , OUTPUT_NODE / 2 , 2
 
 # 验证数据
-Y_vaildate = np.random.randint(0,2,[TRAIN_NUM , OUTPUT_NODE]).astype('float32')
+Y_vaildate = np.random.randint(0, 2, [TRAIN_NUM, OUTPUT_NODE]).astype('float32')
 
 X_validate = encode.encode2d(Y)  # TRAIN_NUM , OUTPUT_NODE / 2 , 2
 
 
-
 # 定义整个模型的x和y
-x = tf.placeholder(tf.float32, [None,INPUT_NODE, 2], name='x_input')
+x = tf.placeholder(tf.float32, [None, INPUT_NODE, 2], name='x_input')
 
-y_ = tf.placeholder(tf.float32, [None,OUTPUT_NODE], name='y-input')
+y_ = tf.placeholder(tf.float32, [None, OUTPUT_NODE], name='y-input')
 
 """
 # 发射机通过DNN输出的数据
@@ -63,8 +60,6 @@ sent_data = DNN_interface.dnn_interface(input_tensor=x,
 # 过信道,加噪声
 X = X * E_x + np.random.randn(TRAIN_NUM , INPUT_NODE, 2)  # sigma * r + mu
 
-# 整理维度
-# x_cnn = tf.reshape(x, [-1, 64])
 
 # 把虚部放在一起，实部放在一起,顺便归一化
 def reshape_dim(a):
