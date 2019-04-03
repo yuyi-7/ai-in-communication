@@ -19,7 +19,7 @@ TRAIN_NUM = 20000  # 数据总量
 MOVING_AVERAGE_DECAY = 0.99  # 滑动平均衰减
 TRAINING_STEPS = 500  # 训练多少次
 
-SNR = 5   # 信噪比
+SNR = -2   # 信噪比
 
 E_x = 10 ** (0.1*SNR)  # 信号能量
 
@@ -35,12 +35,15 @@ Y_vaildate = np.random.randint(0,2,[TRAIN_NUM , OUTPUT_NODE]).astype('float32')
 X_validate = encode.encode2d(Y)  # TRAIN_NUM , OUTPUT_NODE / 2 , 2
 
 # 加噪声
-X = X * E_x + np.random.randn(TRAIN_NUM , INPUT_NODE, 2)  # sigma * r + mu
+noise = np.random.randn(TRAIN_NUM , INPUT_NODE, 2) # sigma * r + mu
+X = X * E_x + noise
 
 # 定义整个模型的x和y
-x = tf.placeholder(tf.float32, [None,INPUT_NODE, 2], name='x_input')
+x = tf.placeholder(tf.float32, [None, INPUT_NODE, 2], name='x_input')
 
-y_ = tf.placeholder(tf.float32, [None,OUTPUT_NODE], name='y-input')
+y_ = tf.placeholder(tf.float32, [None, OUTPUT_NODE], name='y-input')
+
+noise_ = tf.placeholder(tf.float32, [None, INPUT_NODE, 2], name='noise')
 
 # 把虚部放在一起，实部放在一起,顺便归一化
 def reshape_dim(a):
@@ -106,11 +109,13 @@ history = model.fit({'x_input': X,
 """
 
 # 损失函数
-cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=y,
-                                                        labels=y_)  # 自动one-hot编码
-cross_entropy_mean = tf.reduce_mean(cross_entropy)  # 平均交叉熵
+# cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=y,
+#                                                         labels=y_)  # 自动one-hot编码
+# cross_entropy_mean = tf.reduce_mean(cross_entropy)  # 平均交叉熵
+#
+# loss = cross_entropy_mean
 
-loss = cross_entropy_mean
+loss = tf.reduce_sum(tf.square(receive_data_after_cnn - noise_))  # cnn输出的噪声和加性噪声的均方误差
 
 # 优化器
 # 定义当前迭代轮数的变量
@@ -124,7 +129,7 @@ learning_rate = tf.train.exponential_decay(LEARNING_RATE_BASE,  # 基础学习�
                                            TRAIN_NUM / BATCH_SIZE,  # 迭代次数
                                            LEARNING_RATE_DECAY,  # 学习衰减速度
                                            staircase=False)  # 是否每步都改变速率
-# 均方误差
+# 误码率
 ber = tf.reduce_mean(tf.square(y - y_))
 
 loss = loss + ber
@@ -148,19 +153,20 @@ with tf.Session() as sess:
         start = (i * BATCH_SIZE) % TRAIN_NUM
         end = min(start + BATCH_SIZE, TRAIN_NUM)
 
-        merged = tf.summary.merge_all()
+        #merged = tf.summary.merge_all()
 
-        _, summary = sess.run([train_step, merged],
-                              feed_dict={x: X[start:end], y_: Y[start:end]})
+        sess.run(train_step, feed_dict={x: X[start:end], y_: Y[start:end], noise_: noise[start:end]})
 
         ber_loss = sess.run(ber,
                             feed_dict={x: X[start:end], y_: Y[start:end]})
 
         compute_loss = sess.run(loss,
-                                feed_dict={x: X[start:end], y_: Y[start:end]})
+                                feed_dict={x: X[start:end], y_: Y[start:end], noise_: noise[start:end]})
 
         validate_loss = sess.run(loss,
-                                 feed_dict={x: X_validate[start:end], y_: Y_vaildate[start:end]})
+                                 feed_dict={x: X_validate[start:end],
+                                            y_: Y_vaildate[start:end],
+                                            noise_: noise[start:end]})
 
         # 输出
         if i % 100 == 0:

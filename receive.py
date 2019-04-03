@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import encode,decode  #编码
 import time
-from sklearn.preprocessing import StandardScaler 
+from functools import reduce
 
 INPUT_NODE = 32  # 输入节点
 OUTPUT_NODE = 64  # 输出节点
@@ -22,14 +22,14 @@ receive_cnn_REGULARIZER_RATE = 1e-4  # 接收机中CNN的密集层的正则率
 receive_dnn_DROP = 0.2  # 接收机的DNN的drop
 receive_dnn_REGULARIZER_RATE = 1e-4  # 接收机的DNN的正则率
 
-LEARNING_RATE_BASE = 0.8 # 模型基础学习速率
+LEARNING_RATE_BASE = 0.01 # 模型基础学习速率
 LEARNING_RATE_DECAY = 0.99  # 学习衰减速度
 BATCH_SIZE = 200  # 一批数据量
 TRAIN_NUM = 20000  # 数据总量
 MOVING_AVERAGE_DECAY = 0.99  # 滑动平均衰减
 TRAINING_STEPS = 500  # 训练多少次
 
-SNR = -8   # 信噪比
+SNR = 5   # 信噪比
 
 E_x = 10 ** (0.1*SNR)  #信号能量
 
@@ -63,19 +63,47 @@ sent_data = DNN_interface.dnn_interface(input_tensor=x,
 # 过信道,加噪声
 X = X * E_x + np.random.randn(TRAIN_NUM , INPUT_NODE, 2)  # sigma * r + mu
 
-x_cnn = tf.reshape(x, [-1, 64])
+# 整理维度
+# x_cnn = tf.reshape(x, [-1, 64])
+
+# 把虚部放在一起，实部放在一起,顺便归一化
+def reshape_dim(a):
+    temp = []
+    a_mean = np.mean(a)
+    a_std = np.std(a)
+
+    for i in range(np.array(a).shape[0]):
+        temp1 = []
+        temp2 = []
+
+        for j in a[i]:
+            j_0 = (j[0] - a_mean) / a_std
+            j_1 = (j[0] - a_mean) / a_std
+            temp1.append(j_0)
+            temp2.append(j_1)
+        temp1.extend(temp2)
+        temp.append(temp1)
+    return np.array(temp).astype(np.float32)
+
+
+x_cnn = tf.py_func(reshape_dim, [x], tf.float32)
 
 # 批量归一化
-x_toone = tf.contrib.layers.batch_norm(x_cnn, is_training=True)
+# x_toone = tf.contrib.layers.batch_norm(x_cnn, is_training=True)
 
-# 接收机的CNN网络
-receive_data_after_cnn = CNN_interface.cnn_interface(input_tensor=x_toone,
+# # 接收机的CNN网络
+# receive_data_after_cnn, weight = CNN_interface.cnn_interface(input_tensor=x_toone,
+#                                                         output_shape=receive_data_after_cnn_shape,
+#                                                         drop=receive_cnn_DROP,
+#                                                         regularizer_rate=receive_cnn_REGULARIZER_RATE)
+
+receive_data_after_dnn, weight = DNN_interface.dnn_interface(input_tensor=x_cnn,
                                                         output_shape=receive_data_after_cnn_shape,
                                                         drop=receive_cnn_DROP,
                                                         regularizer_rate=receive_cnn_REGULARIZER_RATE)
 
 # 移除噪声
-data_after_remove_voice = tf.subtract(x, receive_data_after_cnn)
+data_after_remove_voice = tf.subtract(x, receive_data_after_dnn)
 
 # 用解码函数判断
 y = tf.py_func(decode.decode2d, [data_after_remove_voice], tf.float32)
@@ -93,8 +121,9 @@ y = tf.py_func(decode.decode2d, [data_after_remove_voice], tf.float32)
 y_judged = tf.round(y)
 y_judged = tf.where(tf.equal(y_judged,0), y_judged-1 , y_judged)
 """
+
 # 损失函数
-cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=y,
+cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=y,
                                                         labels=y_)  # 自动one-hot编码
 cross_entropy_mean = tf.reduce_mean(cross_entropy)  # 平均交叉熵
 
@@ -113,12 +142,12 @@ learning_rate = tf.train.exponential_decay(LEARNING_RATE_BASE,  # 基础学习�
                                            LEARNING_RATE_DECAY,  # 学习衰减速度
                                            staircase=False)  # 是否每步都改变速率
 # 均方误差
-bre = tf.reduce_mean(tf.square(y - y_))
+ber = tf.reduce_mean(tf.square(y  * np.cos(global_step) - y_ * np.sin(global_step)))
 
-loss = loss + bre
+loss = loss + ber
 
 # 定义优化函数
-train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss, global_step)
+train_step = tf.train.AdamOptimizer(learning_rate).minimize(ber, global_step)
 
 """
 # 滑动平均类
@@ -139,7 +168,7 @@ min_loss = float('inf')
 
 #tf.summary.scalar('cross_entropy_mean_loss', cross_entropy_mean)  # tensorboard写入交叉熵误差
 tf.summary.scalar('loss', loss)  # tensorboard写入总误差
-tf.summary.scalar('BRE', bre)
+tf.summary.scalar('BER', ber)
 
 summary_writer = tf.summary.FileWriter('logs/log_'+'%s'%(time.strftime('%m_%d_%H_%M')))  #tensorboard保存目录，目录以时间命名
 
@@ -160,7 +189,7 @@ with tf.Session() as sess:
         _, summary = sess.run([train_step, merged],
                                         feed_dict={x:X[start:end], y_:Y[start:end]})
         
-        bre_loss = sess.run(bre,
+        ber_loss = sess.run(ber,
                         feed_dict={x: X[start:end], y_: Y[start:end]})
         
         compute_loss = sess.run(loss,
@@ -178,15 +207,15 @@ with tf.Session() as sess:
 
         # 输出
         if i % 100 == 0:
-            print('训练了%d次,总损失%f,bre为%f,验证损失%f'%(i,compute_loss,bre_loss,validate_loss))
+            print('训练了%d次,总损失%f,ber为%f,验证损失%f'%(i,compute_loss,ber_loss,validate_loss))
 
         if (i % (TRAINING_STEPS-1) == 0) and (i != 0):
             print('模型预测结果:',sess.run(y , feed_dict={x: X[start:start+1], y_: Y[start:start+1]}))
             print('实际结果:',sess.run(y_ , feed_dict={x: X[start:start+1], y_: Y[start:start+1]}))
             print('加上噪声:', sess.run(x, feed_dict={x: X[start:start+1], y_: Y[start:start+1]}))
             print('去掉噪声:', sess.run(data_after_remove_voice, feed_dict={x: X[start:start+1], y_: Y[start:start+1]}))
-            print('批归一化:', sess.run(x_cnn, feed_dict={x: X[start:start+1], y_: Y[start:start+1]}))
+            # print('批归一化:', sess.run(x_cnn, feed_dict={x: X[start:start+1], y_: Y[start:start+1]}))
             # print('DNN后:', sess.run(y, feed_dict={x: X[start:end], y_: Y[start:end]}))
-            # print('weight:', sess.run(weight, feed_dict={x: X[start:end], y_: Y[start:end]}))
+            print('weight:', sess.run(weight, feed_dict={x: X[start:end], y_: Y[start:end]}))
 
 sess.close()
