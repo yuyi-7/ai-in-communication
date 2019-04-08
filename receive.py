@@ -103,20 +103,6 @@ data_after_remove_voice = tf.subtract(x, receive_data_after_dnn)
 # 用解码函数判断
 y = tf.py_func(decode.decode2d, [data_after_remove_voice], tf.float32)
 
-
-# # DNN后的判断函数
-# def judge_dnn(data):
-#
-#     mat = [1.0,0.0]
-#     data_after_judge = np.where(data>0, mat[0], mat[1])
-#     return data_after_judge.astype(np.float32)
-#
-# y_judged = tf.py_func(judge_dnn, [data_judged], tf.float32)
-"""
-y_judged = tf.round(y)
-y_judged = tf.where(tf.equal(y_judged,0), y_judged-1 , y_judged)
-"""
-
 # 损失函数
 cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=y,
                                                         labels=y_)  # 自动one-hot编码

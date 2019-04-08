@@ -10,23 +10,22 @@ import os
 
 os.environ['KERAS_BACKEND'] = 'tensorflow'
 
-INPUT_NODE = 32  # 输入节点
-OUTPUT_NODE = 64  # 输出节点
+INPUT_NODE = 1  # 输入节点
+OUTPUT_NODE = 2  # 输出节点
 
-LEARNING_RATE_BASE = 0.01 # 模型基础学习速率
+LEARNING_RATE_BASE = 0.1 # 模型基础学习速率
 LEARNING_RATE_DECAY = 0.99  # 学习衰减速度
 BATCH_SIZE = 100  # 一批数据量
-TRAIN_NUM = 2000  # 数据总量
+TRAIN_NUM = 20000  # 数据总量
 MOVING_AVERAGE_DECAY = 0.99  # 滑动平均衰减
 TRAINING_STEPS = 1000  # 训练多少次
 
-SNR = -2   # 信噪比
+SNR = -5   # 信噪比
 
 E_x = 10 ** (0.1*SNR)  # 信号能量
 
 
 # 生成数据
-# Y = np.random.randint(0,2,[TRAIN_NUM , OUTPUT_NODE]).astype('float32')
 Y = generate_data.generate_bit([TRAIN_NUM, OUTPUT_NODE])  # 让数据的0和1的概率都相同
 
 X = encode.encode2d(Y)  # TRAIN_NUM , OUTPUT_NODE / 2 , 2
@@ -48,17 +47,39 @@ y_ = tf.placeholder(tf.float32, [None, OUTPUT_NODE], name='y-input')
 noise_ = tf.placeholder(tf.float32, [None, INPUT_NODE, 2], name='noise')
 
 
+# 把虚部放在一起，实部放在一起,顺便归一化
+def reshape_dim(a):
+    temp = []
+    a_mean = np.mean(a)
+    a_std = np.std(a)
+
+    for i in range(np.array(a).shape[0]):
+        temp1 = []
+        temp2 = []
+
+        for j in a[i]:
+            j_0 = (j[0] - a_mean) / a_std
+            j_1 = (j[0] - a_mean) / a_std
+            temp1.append(j_0)
+            temp2.append(j_1)
+        temp1.extend(temp2)
+        temp.append(temp1)
+    return np.array(temp).astype(np.float32)
+
+
+# x = tf.py_func(reshape_dim, [x], tf.float32)
+
 input_cnn = tf.contrib.layers.batch_norm(tf.reshape(x, [-1, OUTPUT_NODE, 1]), is_training=True)  # reshape + norm
 
-model_cnn = keras.layers.Conv1D(32, 4, activation='relu', input_shape=(None, OUTPUT_NODE, 1))(input_cnn)  # 第一层卷积层
+model_cnn = keras.layers.Conv1D(64, 1, activation='relu', input_shape=(None, OUTPUT_NODE, 1))(input_cnn)  # 第一层卷积层
 
-model_cnn = keras.layers.MaxPool1D(2)(model_cnn)  # 第一层最大池化层
+# model_cnn = keras.layers.MaxPool1D(2)(model_cnn)  # 第一层最大池化层
 
-model_cnn = keras.layers.Conv1D(64, 4, activation='relu')(model_cnn)  # 第二层卷积层
+model_cnn = keras.layers.Conv1D(32, 2, activation='relu')(model_cnn)  # 第二层卷积层
 
 model_cnn = keras.layers.GlobalAvgPool1D()(model_cnn)  # 全局平均池化
 
-model_cnn = keras.layers.Dense(64)(model_cnn)  # 密集层
+model_cnn = keras.layers.Dense(int(INPUT_NODE * 2))(model_cnn)  # 密集层
 
 receive_data_after_cnn = tf.reshape(model_cnn, [-1, INPUT_NODE, 2])
 
@@ -111,9 +132,8 @@ learning_rate = tf.train.exponential_decay(LEARNING_RATE_BASE,  # 基础学习�
                                            LEARNING_RATE_DECAY,  # 学习衰减速度
                                            staircase=False)  # 是否每步都改变速率
 # 误码率
-ber = tf.reduce_mean(tf.square(y - y_))
+ber_num = tf.reduce_sum(tf.square(y - y_))
 
-loss = loss + ber
 
 # 定义优化函数
 train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss, global_step)
@@ -129,15 +149,19 @@ train_op = tf.group(train_step, variables_averages_op)
 with tf.Session() as sess:
 
     tf.global_variables_initializer().run()  # 初始化
+    ber_num_ = 0
+    data_num = 0
     for i in range(TRAINING_STEPS):
         # 设置批次
         start = (i * BATCH_SIZE) % TRAIN_NUM
         end = min(start + BATCH_SIZE, TRAIN_NUM)
 
+        data_num_per_batch = end - start
+
         sess.run(train_step, feed_dict={x: X[start:end], y_: Y[start:end], noise_: noise[start:end]})
 
-        ber_loss = sess.run(ber,
-                            feed_dict={x: X[start:end], y_: Y[start:end]})
+        ber_num_ = ber_num_ + sess.run(ber_num, feed_dict={x: X[start:end], y_: Y[start:end], noise_: noise[start:end]})
+        data_num = data_num + data_num_per_batch
 
         compute_loss = sess.run(loss,
                                 feed_dict={x: X[start:end], y_: Y[start:end], noise_: noise[start:end]})
@@ -149,6 +173,9 @@ with tf.Session() as sess:
 
         # 输出
         if i % 100 == 0:
+            ber_loss = ber_num_ / data_num
+            ber_num_ = 0
+            data_num = 0
             print('训练了%d次,总损失%f,ber为%f,验证损失%f' % (i, compute_loss, ber_loss, validate_loss))
 
         if (i % 500 == 0) and (i != 0):

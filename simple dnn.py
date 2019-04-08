@@ -1,8 +1,6 @@
 import tensorflow as tf
 from tensorflow import keras
-# from keras import layers
-# import keras
-# import keras.backend as K
+
 import numpy as np
 import decode, encode
 import generate_data
