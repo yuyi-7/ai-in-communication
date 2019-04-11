@@ -132,7 +132,7 @@ learning_rate = tf.train.exponential_decay(LEARNING_RATE_BASE,  # 基础学习�
                                            LEARNING_RATE_DECAY,  # 学习衰减速度
                                            staircase=False)  # 是否每步都改变速率
 # 误码率
-ber_num = tf.reduce_sum(tf.square(y - y_))
+ber_num = tf.reduce_sum(tf.abs(y - y_))
 
 
 # 定义优化函数
@@ -174,16 +174,16 @@ with tf.Session() as sess:
         # 输出
         if i % 100 == 0:
             ber_loss = ber_num_ / data_num
+            print('训练了%d次,总损失%f,ber为%f,验证损失%f' % (i, compute_loss, data_num, validate_loss))
             ber_num_ = 0
             data_num = 0
-            print('训练了%d次,总损失%f,ber为%f,验证损失%f' % (i, compute_loss, ber_loss, validate_loss))
 
         if (i % 500 == 0) and (i != 0):
-            print('模型预测结果:', sess.run(y, feed_dict={x: X[start:start + 1], y_: Y[start:start + 1]}))
-            print('实际结果:', sess.run(y_, feed_dict={x: X[start:start + 1], y_: Y[start:start + 1]}))
-            print('加上噪声:', sess.run(x, feed_dict={x: X[start:start + 1], y_: Y[start:start + 1]}))
-            print('去掉噪声:', sess.run(data_after_remove_voice, feed_dict={x: X[start:start + 1], y_: Y[start:start + 1]}))
-            print('批归一化:', sess.run(input_cnn, feed_dict={x: X[start:start+1], y_: Y[start:start+1]}))
+            print('模型预测结果:', sess.run(y, feed_dict={x: X[start:start + 20], y_: Y[start:start + 20]}))
+            print('实际结果:', sess.run(y_, feed_dict={x: X[start:start + 20], y_: Y[start:start + 20]}))
+            print('加上噪声:', sess.run(x, feed_dict={x: X[start:start + 20], y_: Y[start:start + 20]}))
+            print('去掉噪声:', sess.run(data_after_remove_voice, feed_dict={x: X[start:start + 20], y_: Y[start:start + 20]}))
+            # print('批归一化:', sess.run(input_cnn, feed_dict={x: X[start:start+1], y_: Y[start:start+1]}))
         #     # print('DNN后:', sess.run(y, feed_dict={x: X[start:end], y_: Y[start:end]}))
         #     print('weight:', sess.run(weight, feed_dict={x: X[start:end], y_: Y[start:end]}))
 
