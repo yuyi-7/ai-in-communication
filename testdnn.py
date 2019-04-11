@@ -52,21 +52,33 @@ y_ber = tf.placeholder(tf.float32, [None, OUTPUT_NODE], name='y-input-for-ber')
 noise_ = tf.placeholder(tf.float32, [None, INPUT_NODE, 2], name='noise')
 
 
+# 归一化
+def normalization(ten):
+    mean, var = tf.nn.moments(ten, axes=[0, 1])
+    ten_norm = (ten - mean) / tf.sqrt(var)
+    return ten_norm
+
+
 input_dnn = tf.contrib.layers.batch_norm(tf.reshape(x, [-1, OUTPUT_NODE]), is_training=True)  # reshape + norm
 # dnn设计
 model_dnn_keras_layer1=keras.layers.Dense(8,
                                           activation='tanh',
                                           use_bias=True,
                                           activity_regularizer = tf.contrib.layers.l2_regularizer(0.001))(input_dnn)
+model_dnn_keras_layer1 = normalization(model_dnn_keras_layer1)  # 层归一化
 
 model_dnn_keras_layer2=keras.layers.Dense(16,
                                           activation='tanh',
                                           use_bias=True,
                                           activity_regularizer=tf.contrib.layers.l2_regularizer(0.001))(model_dnn_keras_layer1)
+model_dnn_keras_layer2 = normalization(model_dnn_keras_layer2)  # 层归一化
+
 model_dnn_keras_layer3=keras.layers.Dense(32,
                                           activation='tanh',
                                           use_bias=True,
                                           activity_regularizer=tf.contrib.layers.l2_regularizer(0.001))(model_dnn_keras_layer2)
+model_dnn_keras_layer3 = normalization(model_dnn_keras_layer3) # 层归一化
+
 model_dnn_output= keras.layers.Dense(4)(model_dnn_keras_layer3)
 
 # 交叉熵loss
