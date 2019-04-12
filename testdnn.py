@@ -13,14 +13,14 @@ os.environ['KERAS_BACKEND'] = 'tensorflow'
 INPUT_NODE = 1 # 输入节点
 OUTPUT_NODE = 2 # 输出节点
 
-LEARNING_RATE_BASE = 0.01 # 模型基础学习速率
+LEARNING_RATE_BASE = 0.001 # 模型基础学习速率
 LEARNING_RATE_DECAY = 0.99  # 学习衰减速度
 BATCH_SIZE = 100  # 一批数据量
 TRAIN_NUM = 20000  # 数据总量
 MOVING_AVERAGE_DECAY = 0.99  # 滑动平均衰减
-TRAINING_STEPS = 1000  # 训练多少次
+TRAINING_STEPS = 10000  # 训练多少次
 
-SNR = -2   # 信噪比
+SNR = 8  # 信噪比
 
 E_x = 10 ** (0.1*SNR)  # 信号能量
 
@@ -123,6 +123,9 @@ summary_writer = tf.summary.FileWriter('logs/dnn_log')  # tensorboard保存目�
 with tf.Session() as sess:
     tf.global_variables_initializer().run()  # 初始化
     summary_writer.add_graph(sess.graph)  # 写入变量图
+
+    ber_loss_sum = 0
+    batch_sum = 0
     for i in range(TRAINING_STEPS):
         # 设置批次
         start = (i * BATCH_SIZE) % TRAIN_NUM
@@ -134,12 +137,11 @@ with tf.Session() as sess:
 
         ber_loss = sess.run(ber,
                             feed_dict={x: X[start:end], y_ber: Y[start:end]})
+        ber_loss_sum = ber_loss_sum + ber_loss
+        batch_sum = batch_sum + batch_num
 
         compute_loss = sess.run(loss,
                                 feed_dict={x: X[start:end], y_: Y_one_hot[start:end]})
-
-        # model_output_sigmoid_ = sess.run(model_output_sigmoid,
-        #                                  feed_dict={x: X[start:end], y_: Y_one_hot[start:end]})
 
         validate_loss = sess.run(loss,
                                  feed_dict={x: X_validate[start:end],
@@ -147,8 +149,14 @@ with tf.Session() as sess:
                                             })
 
         # 输出
-        if i % 20 == 0:
-            print('训练了%d次,总损失%f,ber为%f,验证损失%f' % (i, compute_loss, ber_loss/(batch_num*2), validate_loss))
+        if i % 50 == 0:
+            print('训练了%d次,总损失%f,验证损失%f' % (i, compute_loss, validate_loss))
+
+        if i % 100 == 0:
+            print('ber计算为%f' % (ber_loss_sum/(batch_sum*2)))
+
+            ber_loss_sum = 0
+            batch_sum = 0
 
         # if (i % 200 == 0) and (i != 0):
             # print(model_output_sigmoid_)
