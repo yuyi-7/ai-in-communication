@@ -20,7 +20,7 @@ TRAIN_NUM = 20000  # 数据总量
 MOVING_AVERAGE_DECAY = 0.99  # 滑动平均衰减
 TRAINING_STEPS = 10000  # 训练多少次
 
-SNR = 8  # 信噪比
+SNR = -3  # 信噪比
 
 E_x = 10 ** (0.1*SNR)  # 信号能量
 
@@ -80,6 +80,10 @@ model_dnn_keras_layer3=keras.layers.Dense(32,
 model_dnn_keras_layer3 = normalization(model_dnn_keras_layer3) # 层归一化
 
 model_dnn_output= keras.layers.Dense(4)(model_dnn_keras_layer3)
+
+norm = tf.reshape(tf.norm(model_dnn_output, 2, axis=1), [-1,1])  # 2范数
+
+model_dnn_output = tf.div(model_dnn_output, norm)
 
 # 交叉熵loss
 # model_dnn_output = model_dnn_output / tf.norm(model_dnn_output, 2, axis=0)
@@ -153,7 +157,7 @@ with tf.Session() as sess:
             print('训练了%d次,总损失%f,验证损失%f' % (i, compute_loss, validate_loss))
 
         if i % 100 == 0:
-            print('ber计算为%f' % (ber_loss_sum/(batch_sum*2)))
+            print('ber计算为%f' % (ber_loss_sum/(batch_sum*2)))  # 数据量为100*100*2
 
             ber_loss_sum = 0
             batch_sum = 0

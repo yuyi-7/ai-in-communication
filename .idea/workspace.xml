@@ -75,8 +75,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/testdnn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="18">
-              <caret line="151" column="16" selection-start-line="151" selection-start-column="16" selection-end-line="151" selection-end-column="16" />
+            <state relative-caret-position="288">
+              <caret line="85" column="49" selection-start-line="85" selection-start-column="49" selection-end-line="85" selection-end-column="49" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -311,6 +311,9 @@
       <module name="CNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -371,7 +374,9 @@
       <workItem from="1554298857232" duration="9278000" />
       <workItem from="1554704097668" duration="9400000" />
       <workItem from="1554970552909" duration="12738000" />
-      <workItem from="1555035366722" duration="426000" />
+      <workItem from="1555035366722" duration="1218000" />
+      <workItem from="1555036942954" duration="603000" />
+      <workItem from="1555043891639" duration="1243000" />
     </task>
     <task id="LOCAL-00001" summary="modefiy the py_fuc of tensorflow">
       <created>1552815625639</created>
@@ -464,11 +469,18 @@
       <option name="project" value="LOCAL" />
       <updated>1554991097059</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="modify ber caculate method">
+      <created>1555035828295</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1555035828295</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="88374000" />
+    <option name="totallyTimeSpent" value="91012000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -483,7 +495,7 @@
     <frame x="1920" y="0" width="1600" height="900" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.23876765" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24518614" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -522,7 +534,8 @@
     <MESSAGE value="modify ber calculate method but somewhere is wrong" />
     <MESSAGE value="modify dnn" />
     <MESSAGE value="add norm in each layer" />
-    <option name="LAST_COMMIT_MESSAGE" value="add norm in each layer" />
+    <MESSAGE value="modify ber caculate method" />
+    <option name="LAST_COMMIT_MESSAGE" value="modify ber caculate method" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/../H_D_it_Net/load_model.py" />
@@ -624,8 +637,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/testdnn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="151" column="16" selection-start-line="151" selection-start-column="16" selection-end-line="151" selection-end-column="16" />
+        <state relative-caret-position="288">
+          <caret line="85" column="49" selection-start-line="85" selection-start-column="49" selection-end-line="85" selection-end-column="49" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
           </folding>
